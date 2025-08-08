@@ -1,5 +1,5 @@
 //
-//  TokenDemoApp.swift
+//  TokenTextFieldDemoApp.swift
 //  SwiftUITokenField • https://github.com/orchetect/SwiftUITokenField
 //  © 2025 Steffan Andrews • Licensed under MIT License
 //
@@ -7,7 +7,7 @@
 import SwiftUI
 
 @main
-struct TokenDemoApp: App {
+struct TokenTextFieldDemoApp: App {
     var body: some Scene {
         WindowGroup {
             ContentView()

@@ -13,6 +13,7 @@ import SwiftUI
 public struct TokenTextField<Token>: View, NSViewRepresentable where Token: Hashable {
     @Binding private var tokens: TokenizedString<Token>
     
+    private var isEditable: Bool
     private var decode: (Token) -> String
     private var encode: (String) -> Token?
     private var completions: [Token: String]
@@ -37,6 +38,7 @@ public struct TokenTextField<Token>: View, NSViewRepresentable where Token: Hash
         cell?.tokenStyle = tokenField.tokenStyle
         
         // set up initial data
+        tokenField.isEditable = isEditable
         tokenField.objectValue = unwrap(tokens: tokens)
         context.coordinator.tokens = _tokens
         
@@ -51,6 +53,7 @@ public struct TokenTextField<Token>: View, NSViewRepresentable where Token: Hash
         }
         
         nsView.objectValue = unwrap(tokens: tokens)
+        nsView.isEditable = isEditable
     }
     
     // MARK: - Coordinator
@@ -207,11 +210,13 @@ extension TokenTextField {
     public init(
         _ tokens: Binding<TokenizedString<Token>>,
         completions: [Token: String] = [:],
+        isEditable: Bool = true,
         decode: @escaping (_ token: Token) -> String,
         encode: @escaping (_ string: String) -> Token?
     ) {
         _tokens = tokens
         self.completions = completions
+        self.isEditable = isEditable
         self.decode = decode
         self.encode = encode
     }
@@ -221,10 +226,12 @@ extension TokenTextField where Token: RawRepresentable, Token.RawValue == String
     /// Initialize using a token type that is `RawRepresentable` as a `String`, tokenizing string input based on its raw value.
     public init(
         _ tokens: Binding<TokenizedString<Token>>,
-        completions: [Token: String] = [:]
+        completions: [Token: String] = [:],
+        isEditable: Bool = true,
     ) {
         _tokens = tokens
         self.completions = completions
+        self.isEditable = isEditable
         decode = { $0.rawValue }
         encode = { Token(rawValue: $0) }
     }
@@ -233,9 +240,13 @@ extension TokenTextField where Token: RawRepresentable, Token.RawValue == String
 extension TokenTextField where Token: RawRepresentable, Token.RawValue == String, Token: CaseIterable {
     /// Initialize using a token type that is `RawRepresentable` as a `String` & `CaseIterable`, tokenizing string input
     /// based on its raw value and auto-populating completions.
-    public init(_ tokens: Binding<TokenizedString<Token>>) {
+    public init(
+        _ tokens: Binding<TokenizedString<Token>>,
+        isEditable: Bool = true
+    ) {
         _tokens = tokens
         completions = Token.allCases.mapToDictionaryKeys(withValues: { $0.rawValue })
+        self.isEditable = isEditable
         decode = { $0.rawValue }
         encode = { Token(rawValue: $0) }
     }
@@ -243,9 +254,10 @@ extension TokenTextField where Token: RawRepresentable, Token.RawValue == String
 
 // TODO: works, but is not useful or relevant since our token field is treated as a text field, so this would result in tokenizing all strings as tokens which is meaningless.
 // extension TokenTextField where Token == String {
-//     public init(_ tokens: Binding<TokenizedString<Token>>, completions: [String] = []) {
+//     public init(_ tokens: Binding<TokenizedString<Token>>, completions: [String] = [], isEditable: Bool = true) {
 //         _tokens = tokens
 //         self.completions = completions.mapToDictionaryKeys(withValues: { $0 })
+//         self.isEditable = isEditable
 //         decode = { $0 }
 //         encode = { $0 }
 //     }
@@ -255,10 +267,12 @@ extension TokenTextField where Token: RawRepresentable, Token.RawValue == String
 // extension TokenTextField where Token: StringProtocol {
 //      public init(
 //         _ tokens: Binding<TokenizedString<Token>>,
-//         completions: [Token: String] = [:]
+//         completions: [Token: String] = [:],
+//         isEditable: Bool = true
 //      ) {
 //          _tokens = tokens
 //          self.completions = completions
+//         self.isEditable = isEditable
 //          decode = { String($0) }
 //          encode = { Token($0) }
 //      }

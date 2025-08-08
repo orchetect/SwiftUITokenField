@@ -1,5 +1,5 @@
 //
-//  Tokens.swift
+//  TokenizedString Codable.swift
 //  SwiftUITokenField • https://github.com/orchetect/SwiftUITokenField
 //  © 2025 Steffan Andrews • Licensed under MIT License
 //
@@ -7,7 +7,12 @@
 import Foundation
 import SwiftUITokenField
 
-extension TokenTextField<Token>.TokenizedString: @retroactive Codable {
+/// Custom Codable implementation to serialize to/from an array of single-element dictionaries.
+///
+/// Each array element maps to a sequence element.
+/// The dictionary key determines if the element is a token or a plain string.
+/// In turn, dictionary value holds either the raw token or the plain text string, respectively.
+extension TokenizedString<Token>: @retroactive Codable {
     public enum CodingKeys: String, CodingKey {
         case token
         case string

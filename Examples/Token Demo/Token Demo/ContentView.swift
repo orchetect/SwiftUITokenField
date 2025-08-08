@@ -8,7 +8,7 @@ import SwiftUI
 import SwiftUITokenField
 
 struct ContentView: View {
-    @State private var tokens: TokenTextField<Token>.TokenizedString = .preset // .init()
+    @State private var tokenizedString: TokenizedString<Token> = .preset // .init()
     
     @State private var previewID: UUID = UUID()
     @State private var updateTimer: Task<Void, any Error>?
@@ -18,7 +18,9 @@ struct ContentView: View {
             HStack(spacing: 40) {
                 Menu {
                     ForEach(Token.allCases) { token in
-                        Button(token.rawValue) { tokens.sequence.append(.token(token)) }
+                        Button("\(token.rawValue) - \(token.outputString)") {
+                            tokenizedString.sequence.append(.token(token))
+                        }
                     }
                 } label: {
                     Text("Append Token")
@@ -42,12 +44,7 @@ struct ContentView: View {
                 }
             }
             
-            TokenTextField(
-                $tokens,
-                completions: [:], // Token.allCases.reduce(into: [:]) { $0[$1] = $1.rawValue },
-                decode: { token in token.rawValue },
-                encode: { string in Token(rawValue: string) }
-            )
+            TokenTextField($tokenizedString)
             
             Text("Preview output:")
             Text(previewString).id(previewID)
@@ -68,7 +65,7 @@ struct ContentView: View {
     }
     
     private var previewString: String {
-        tokens.string { token in token.outputString }
+        tokenizedString.string { token in token.outputString }
     }
     
     private func startTimer() {
@@ -86,11 +83,15 @@ struct ContentView: View {
         updateTimer?.cancel()
         updateTimer = nil
     }
-    
+}
+
+// MARK: - Serialization
+
+extension ContentView {
     private func saveCodableJSON() {
         do {
             let encoder = JSONEncoder()
-            let encodedData = try encoder.encode(tokens)
+            let encodedData = try encoder.encode(tokenizedString)
             UserDefaults.standard.set(encodedData, forKey: "savedTokensJSON")
         } catch {
             print(error.localizedDescription)
@@ -101,32 +102,36 @@ struct ContentView: View {
         do {
             let decoder = JSONDecoder()
             guard let encodedData = UserDefaults.standard.data(forKey: "savedTokensJSON") else { return }
-            let decoded = try decoder.decode(TokenTextField<Token>.TokenizedString.self, from: encodedData)
-            tokens = decoded
+            let decoded = try decoder.decode(TokenizedString<Token>.self, from: encodedData)
+            tokenizedString = decoded
         } catch {
             print(error.localizedDescription)
         }
     }
     
     private func saveTokenizedString() {
-        let tokenizedString = tokens.tokenizedString()
-        UserDefaults.standard.set(tokenizedString, forKey: "savedTokenizedString")
+        let encoded = tokenizedString.tokenizedString()
+        print("Saving tokenized string: \"\(encoded)\"")
+        UserDefaults.standard.set(encoded, forKey: "savedTokenizedString")
     }
     
     private func loadTokenizedString() {
         do {
-            guard let tokenizedString = UserDefaults.standard.string(forKey: "savedTokenizedString") else { return }
-            tokens = try TokenTextField<Token>.TokenizedString(from: tokenizedString)
+            guard let encoded = UserDefaults.standard.string(forKey: "savedTokenizedString") else { return }
+            print("Loading tokenized string: \"\(encoded)\"")
+            tokenizedString = try TokenizedString<Token>(from: encoded)
         } catch {
             print(error.localizedDescription)
         }
     }
 }
 
-extension TokenTextField<Token>.TokenizedString {
-    // Sample data for the demo.
+// MARK: - Mock Data
+
+extension TokenizedString<Token> {
+    /// Sample data for the demo.
     static let preset = Self(sequence: [
-        .string("This is all "),
+        .string("Something is "),
         .token(.foobar),
         .string(" at "),
         .token(.time),

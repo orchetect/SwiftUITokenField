@@ -29,7 +29,7 @@ extension Token {
     public var outputString: String {
         switch self {
         case .foobar:
-            "foobar"
+            "all messed up"
         case .date:
             Date().formatted(date: .complete, time: .omitted)
         case .time:

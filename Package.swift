@@ -3,22 +3,22 @@
 import PackageDescription
 
 let package = Package(
-    name: "SwiftTokenField",
+    name: "SwiftUITokenField",
     platforms: [.macOS(.v11)],
     products: [
         .library(
-            name: "SwiftTokenField",
-            targets: ["SwiftTokenField"]
+            name: "SwiftUITokenField",
+            targets: ["SwiftUITokenField"]
         )
     ],
     targets: [
         .target(
-            name: "SwiftTokenField",
+            name: "SwiftUITokenField",
             dependencies: []
         ),
         .testTarget(
-            name: "SwiftTokenFieldTests",
-            dependencies: ["SwiftTokenField"]
+            name: "SwiftUITokenFieldTests",
+            dependencies: ["SwiftUITokenField"]
         )
     ]
 )

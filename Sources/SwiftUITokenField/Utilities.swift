@@ -1,6 +1,6 @@
 //
 //  Utilities.swift
-//  TokenField
+//  SwiftUITokenField
 //
 //  Created by Steffan Andrews on 2025-08-07.
 //

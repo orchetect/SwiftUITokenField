@@ -1,6 +1,6 @@
 //
 //  TokenTextField.swift
-//  SwiftTokenField
+//  SwiftUITokenField
 //
 
 #if os(macOS)

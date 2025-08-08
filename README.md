@@ -1,3 +1,3 @@
-# SwiftTokenField
+# SwiftUITokenField
 
 SwiftUI wrapper for `NSTokenField`

@@ -1,12 +1,11 @@
 //
 //  Tokens.swift
-//  SwiftTokenField
-//
-//  Created by Steffan Andrews on 2025-08-07.
+//  SwiftUITokenField • https://github.com/orchetect/SwiftUITokenField
+//  © 2025 Steffan Andrews • Licensed under MIT License
 //
 
 import Foundation
-import SwiftTokenField
+import SwiftUITokenField
 
 extension TokenTextField<Token>.TokenizedString: @retroactive Codable {
     public enum CodingKeys: String, CodingKey {

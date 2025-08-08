@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		E2BD339F2E45CBC50012B1B5 /* SwiftTokenField in Frameworks */ = {isa = PBXBuildFile; productRef = E2BD339E2E45CBC50012B1B5 /* SwiftTokenField */; };
+		E2BD33AC2E45D4630012B1B5 /* SwiftUITokenField in Frameworks */ = {isa = PBXBuildFile; productRef = E2BD33AB2E45D4630012B1B5 /* SwiftUITokenField */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -15,9 +15,9 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		E2EA63052E4555C2004B3B57 /* TokenFieldTest */ = {
+		E2EA63052E4555C2004B3B57 /* Token Demo */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			path = TokenFieldTest;
+			path = "Token Demo";
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -27,7 +27,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				E2BD339F2E45CBC50012B1B5 /* SwiftTokenField in Frameworks */,
+				E2BD33AC2E45D4630012B1B5 /* SwiftUITokenField in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -37,7 +37,7 @@
 		E2EA62FA2E4555C2004B3B57 = {
 			isa = PBXGroup;
 			children = (
-				E2EA63052E4555C2004B3B57 /* TokenFieldTest */,
+				E2EA63052E4555C2004B3B57 /* Token Demo */,
 				E2EA63042E4555C2004B3B57 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -66,11 +66,11 @@
 			dependencies = (
 			);
 			fileSystemSynchronizedGroups = (
-				E2EA63052E4555C2004B3B57 /* TokenFieldTest */,
+				E2EA63052E4555C2004B3B57 /* Token Demo */,
 			);
 			name = "Token Demo";
 			packageProductDependencies = (
-				E2BD339E2E45CBC50012B1B5 /* SwiftTokenField */,
+				E2BD33AB2E45D4630012B1B5 /* SwiftUITokenField */,
 			);
 			productName = TokenFieldTest;
 			productReference = E2EA63032E4555C2004B3B57 /* Token Demo.app */;
@@ -101,7 +101,7 @@
 			mainGroup = E2EA62FA2E4555C2004B3B57;
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
-				E2BD339D2E45CBC50012B1B5 /* XCLocalSwiftPackageReference "../../../SwiftTokenField" */,
+				E2BD33AA2E45D4630012B1B5 /* XCLocalSwiftPackageReference "../../../SwiftUITokenField" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = E2EA63042E4555C2004B3B57 /* Products */;
@@ -276,7 +276,7 @@
 					"@executable_path/../Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.orchetect.SwiftTokenField.TokenDemo;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.orchetect.SwiftUITokenField.TokenDemo${DEVELOPMENT_TEAM}";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				REGISTER_APP_GROUPS = YES;
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
@@ -310,7 +310,7 @@
 					"@executable_path/../Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.orchetect.SwiftTokenField.TokenDemo;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.orchetect.SwiftUITokenField.TokenDemo${DEVELOPMENT_TEAM}";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				REGISTER_APP_GROUPS = YES;
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
@@ -346,16 +346,16 @@
 /* End XCConfigurationList section */
 
 /* Begin XCLocalSwiftPackageReference section */
-		E2BD339D2E45CBC50012B1B5 /* XCLocalSwiftPackageReference "../../../SwiftTokenField" */ = {
+		E2BD33AA2E45D4630012B1B5 /* XCLocalSwiftPackageReference "../../../SwiftUITokenField" */ = {
 			isa = XCLocalSwiftPackageReference;
-			relativePath = ../../../SwiftTokenField;
+			relativePath = ../../../SwiftUITokenField;
 		};
 /* End XCLocalSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		E2BD339E2E45CBC50012B1B5 /* SwiftTokenField */ = {
+		E2BD33AB2E45D4630012B1B5 /* SwiftUITokenField */ = {
 			isa = XCSwiftPackageProductDependency;
-			productName = SwiftTokenField;
+			productName = SwiftUITokenField;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

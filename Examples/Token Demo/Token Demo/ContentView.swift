@@ -1,10 +1,11 @@
 //
 //  ContentView.swift
-//  SwiftTokenField
+//  SwiftUITokenField • https://github.com/orchetect/SwiftUITokenField
+//  © 2025 Steffan Andrews • Licensed under MIT License
 //
 
 import SwiftUI
-import SwiftTokenField
+import SwiftUITokenField
 
 struct ContentView: View {
     @State private var tokens: TokenTextField<Token>.TokenizedString = .preset // .init()

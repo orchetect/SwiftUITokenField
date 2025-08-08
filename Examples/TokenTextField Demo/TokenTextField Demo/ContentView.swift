@@ -14,27 +14,32 @@ struct ContentView: View {
     @State private var updateTimer: Task<Void, any Error>?
     
     var body: some View {
-        VStack(spacing: 20) {
-            HStack(spacing: 40) {
-                Menu {
-                    ForEach(Token.allCases) { token in
-                        Button("\(token.rawValue) - \(token.outputString)") {
-                            tokenizedString.sequence.append(.token(token))
-                        }
-                    }
-                } label: {
-                    Text("Append Token")
+        Form {
+            Section("Token TextField") {
+                VStack(alignment: .leading, spacing: 10) {
+                    TokenTextField($tokenizedString)
+                    Text(previewString).id(previewID)
                 }
-                .frame(width: 150)
                 
-                Text("OR")
-                    .font(.title2)
+                LabeledContent("Append Token from Menu") {
+                    Menu {
+                        ForEach(Token.allCases) { token in
+                            Button("\(token.rawValue) - \(token.outputString)") {
+                                tokenizedString.sequence.append(.token(token))
+                            }
+                        }
+                    } label: {
+                        Text("Tokens")
+                    }
+                    .frame(width: 80)
+                    .multilineTextAlignment(.trailing)
+                }
                 
-                VStack(spacing: 5) {
-                    Text("Insert Token by Dragging:")
+                LabeledContent("Insert Token by Dragging") {
                     HStack {
                         ForEach(Token.allCases) { token in
                             Text(token.rawValue)
+                                .textSelection(.disabled)
                                 .padding([.leading, .trailing], 5)
                                 .background(.tertiary)
                                 .border(.secondary)
@@ -44,20 +49,18 @@ struct ContentView: View {
                 }
             }
             
-            TokenTextField($tokenizedString)
-            
-            Text(previewString).id(previewID)
-            
-            HStack {
-                Button("Save as Tokenized String") { saveTokenizedString() }
-                Button("Load as Tokenized String") { loadTokenizedString() }
-            }
-            
-            HStack {
-                Button("Save as Codable JSON") { saveCodableJSON() }
-                Button("Load as Codable JSON") { loadCodableJSON() }
+            Section("UserDefaults") {
+                LabeledContent("Tokenized String") {
+                    Button("Save") { saveTokenizedString() }
+                    Button("Load") { loadTokenizedString() }
+                }
+                LabeledContent("Codable JSON") {
+                    Button("Save") { saveCodableJSON() }
+                    Button("Load") { loadCodableJSON() }
+                }
             }
         }
+        .formStyle(.grouped)
         .padding()
         .onAppear { startTimer() }
         .onDisappear { stopTimer() }

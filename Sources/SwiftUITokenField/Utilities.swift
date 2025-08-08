@@ -1,6 +1,7 @@
 //
 //  Utilities.swift
-//  SwiftUITokenField
+//  SwiftUITokenField • https://github.com/orchetect/SwiftUITokenField
+//  © 2025 Steffan Andrews • Licensed under MIT License
 //
 //  Created by Steffan Andrews on 2025-08-07.
 //

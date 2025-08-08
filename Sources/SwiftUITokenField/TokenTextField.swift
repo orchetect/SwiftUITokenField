@@ -1,6 +1,7 @@
 //
 //  TokenTextField.swift
-//  SwiftUITokenField
+//  SwiftUITokenField • https://github.com/orchetect/SwiftUITokenField
+//  © 2025 Steffan Andrews • Licensed under MIT License
 //
 
 #if os(macOS)

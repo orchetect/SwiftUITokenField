@@ -46,7 +46,6 @@ struct ContentView: View {
             
             TokenTextField($tokenizedString)
             
-            Text("Preview output:")
             Text(previewString).id(previewID)
             
             HStack {
@@ -92,6 +91,9 @@ extension ContentView {
         do {
             let encoder = JSONEncoder()
             let encodedData = try encoder.encode(tokenizedString)
+            if let jsonString = String(data: encodedData, encoding: .utf8) {
+                print("Saving JSON: \(jsonString)")
+            }
             UserDefaults.standard.set(encodedData, forKey: "savedTokensJSON")
         } catch {
             print(error.localizedDescription)
@@ -102,6 +104,9 @@ extension ContentView {
         do {
             let decoder = JSONDecoder()
             guard let encodedData = UserDefaults.standard.data(forKey: "savedTokensJSON") else { return }
+            if let jsonString = String(data: encodedData, encoding: .utf8) {
+                print("Loading JSON: \(jsonString)")
+            }
             let decoded = try decoder.decode(TokenizedString<Token>.self, from: encodedData)
             tokenizedString = decoded
         } catch {

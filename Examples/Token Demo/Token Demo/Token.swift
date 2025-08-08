@@ -7,23 +7,15 @@
 import Foundation
 import SwiftUI
 
-public enum Token: String {
+public enum Token: String, CaseIterable {
     case foobar
     case date
     case time
 }
 
-extension Token: CaseIterable { }
-
-extension Token: Equatable { }
-
-extension Token: Hashable { }
-
 extension Token: Identifiable {
     public var id: RawValue { rawValue }
 }
-
-extension Token: Codable { }
 
 extension Token {
     public var outputString: String {

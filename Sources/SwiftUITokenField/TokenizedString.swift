@@ -1,32 +1,28 @@
 //
-//  TokenTextField TokenizedString.swift
+//  TokenizedString.swift
 //  SwiftUITokenField • https://github.com/orchetect/SwiftUITokenField
 //  © 2025 Steffan Andrews • Licensed under MIT License
 //
 
-#if os(macOS)
-
-extension TokenTextField {
-    public struct TokenizedString {
-        public var sequence: [Element]
-        
-        public init(sequence: [Element] = []) {
-            self.sequence = sequence
-        }
+public struct TokenizedString<Token> {
+    public var sequence: [Element]
+    
+    public init(sequence: [Element] = []) {
+        self.sequence = sequence
     }
 }
 
-extension TokenTextField.TokenizedString: Equatable where Token: Equatable { }
+extension TokenizedString: Equatable where Token: Equatable { }
 
-extension TokenTextField.TokenizedString: Hashable where Token: Hashable { }
+extension TokenizedString: Hashable where Token: Hashable { }
 
-extension TokenTextField.TokenizedString: Sendable where Token: Sendable { }
+extension TokenizedString: Sendable where Token: Sendable { }
 
-extension TokenTextField.TokenizedString: Identifiable where Token: Hashable {
+extension TokenizedString: Identifiable where Token: Hashable {
     public var id: Self { self }
 }
 
-extension TokenTextField.TokenizedString {
+extension TokenizedString {
     public func string(
         separator: String = "",
         substitution: (_ token: Token) -> String
@@ -44,7 +40,7 @@ extension TokenTextField.TokenizedString {
 
 // MARK: - Tokenized String
 
-extension TokenTextField.TokenizedString where Token: RawRepresentable, Token.RawValue == String {
+extension TokenizedString where Token: RawRepresentable, Token.RawValue == String {
     /// Initializes by decoding a tokenized string.
     public init(from tokenizedString: String, tokenPrefix: String = "%[", tokenSuffix: String = "]") throws {
         assert(tokenPrefix != "")
@@ -107,5 +103,3 @@ extension TokenTextField.TokenizedString where Token: RawRepresentable, Token.Ra
             .joined()
     }
 }
-
-#endif

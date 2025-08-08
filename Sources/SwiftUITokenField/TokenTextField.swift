@@ -11,7 +11,7 @@ import SwiftUI
 
 /// A text field that allows mixed entry of text and strongly-typed tokens.
 public struct TokenTextField<Token>: View, NSViewRepresentable where Token: Hashable {
-    @Binding private var tokens: TokenizedString
+    @Binding private var tokens: TokenizedString<Token>
     
     private var decode: (Token) -> String
     private var encode: (String) -> Token?
@@ -60,7 +60,7 @@ public struct TokenTextField<Token>: View, NSViewRepresentable where Token: Hash
     }
     
     public final class Coordinator: NSObject, NSTokenFieldDelegate, ObservableObject {
-        var tokens: Binding<TokenizedString>?
+        var tokens: Binding<TokenizedString<Token>>?
         
         var parent: TokenTextField<Token>
         
@@ -176,8 +176,8 @@ public struct TokenTextField<Token>: View, NSViewRepresentable where Token: Hash
         }
         
         /// Utility method to wrap the raw objects in ``TokenizedString/Element``-wrapped enum cases.
-        func mapToTokensElements(_ objects: [Any]) -> [TokenizedString.Element]? {
-            var mapped: [TokenizedString.Element] = []
+        func mapToTokensElements(_ objects: [Any]) -> [TokenizedString<Token>.Element]? {
+            var mapped: [TokenizedString<Token>.Element] = []
             for object in objects {
                 switch object {
                 case let token as Token: mapped.append(.token(token))
@@ -190,7 +190,7 @@ public struct TokenTextField<Token>: View, NSViewRepresentable where Token: Hash
     }
     
     /// Utility method to unwrap ``TokenizedString/Element``-wrapped objects and return an array to use with `NSTokenField`.
-    func unwrap(tokens: TokenizedString) -> [Any] {
+    func unwrap(tokens: TokenizedString<Token>) -> [Any] {
         tokens.sequence.map {
             switch $0 {
             case let .token(token): token
@@ -205,7 +205,7 @@ public struct TokenTextField<Token>: View, NSViewRepresentable where Token: Hash
 extension TokenTextField {
     /// Initialize
     public init(
-        _ tokens: Binding<TokenizedString>,
+        _ tokens: Binding<TokenizedString<Token>>,
         completions: [Token: String] = [:],
         decode: @escaping (_ token: Token) -> String,
         encode: @escaping (_ string: String) -> Token?
@@ -220,7 +220,7 @@ extension TokenTextField {
 extension TokenTextField where Token: RawRepresentable, Token.RawValue == String {
     /// Initialize using a token type that is `RawRepresentable` as a `String`, tokenizing string input based on its raw value.
     public init(
-        _ tokens: Binding<TokenizedString>,
+        _ tokens: Binding<TokenizedString<Token>>,
         completions: [Token: String] = [:]
     ) {
         _tokens = tokens
@@ -233,7 +233,7 @@ extension TokenTextField where Token: RawRepresentable, Token.RawValue == String
 extension TokenTextField where Token: RawRepresentable, Token.RawValue == String, Token: CaseIterable {
     /// Initialize using a token type that is `RawRepresentable` as a `String` & `CaseIterable`, tokenizing string input
     /// based on its raw value and auto-populating completions.
-    public init(_ tokens: Binding<TokenizedString>) {
+    public init(_ tokens: Binding<TokenizedString<Token>>) {
         _tokens = tokens
         completions = Token.allCases.mapToDictionaryKeys(withValues: { $0.rawValue })
         decode = { $0.rawValue }
@@ -243,7 +243,7 @@ extension TokenTextField where Token: RawRepresentable, Token.RawValue == String
 
 // TODO: works, but is not useful or relevant since our token field is treated as a text field, so this would result in tokenizing all strings as tokens which is meaningless.
 // extension TokenTextField where Token == String {
-//     public init(_ tokens: Binding<TokenizedString>, completions: [String] = []) {
+//     public init(_ tokens: Binding<TokenizedString<Token>>, completions: [String] = []) {
 //         _tokens = tokens
 //         self.completions = completions.mapToDictionaryKeys(withValues: { $0 })
 //         decode = { $0 }
@@ -254,7 +254,7 @@ extension TokenTextField where Token: RawRepresentable, Token.RawValue == String
 // TODO: works, but is not useful or relevant since our token field is treated as a text field, so this would result in tokenizing all strings as tokens which is meaningless.
 // extension TokenTextField where Token: StringProtocol {
 //      public init(
-//         _ tokens: Binding<TokenizedString>,
+//         _ tokens: Binding<TokenizedString<Token>>,
 //         completions: [Token: String] = [:]
 //      ) {
 //          _tokens = tokens

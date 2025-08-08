@@ -2,9 +2,23 @@
 
 [![Platforms - macOS](https://img.shields.io/badge/platforms-macOS-blue.svg?style=flat)](https://developer.apple.com/swift) ![Swift 6.0](https://img.shields.io/badge/Swift-6.0-blue.svg?style=flat) [![Xcode 16](https://img.shields.io/badge/Xcode-16-blue.svg?style=flat)](https://developer.apple.com/swift) [![License: MIT](http://img.shields.io/badge/license-MIT-lightgrey.svg?style=flat)](https://github.com/orchetect/SwiftUITokenField/blob/main/LICENSE)
 
-SwiftUI wrapper for `NSTokenField` allowing mixed entry of tokens and plain text.
+Richly-featured SwiftUI wrapper for `NSTokenField` on macOS.
 
-## Sample Usage
+## TokenTextField
+
+The `TokenTextField` view allows mixed entry of tokens and plain text.
+
+This field allows the user to define a token substitution string template.
+
+![Screenshot](Images/tokentextfield -screenshot.png)
+
+- Methods for encoding/decoding tokenized strings
+- Supports text entry auto-complete for tokens
+- Tokens may also be added programmatically from a menu, or using drag & drop from a list of tokens in the UI
+
+### Sample Usage
+
+`TokenTextField` works best when you define a token enum that is `String` `RawRepresentable` and conforms to `CaseIterable`. This allows it to automatically synthesize token encoding and decoding, as well as synthesize text auto-complete entries.
 
 ```swift
 import SwiftUI
@@ -57,7 +71,7 @@ print(encoded)
 let decoded = try TokenizedString<MyToken>(from: "The date is %[date], and the time is %[time].")
 ```
 
-## Advanced Usage
+### Advanced Usage
 
 The `TokenTextField` view supports `NSTokenField` auto-completion.
 

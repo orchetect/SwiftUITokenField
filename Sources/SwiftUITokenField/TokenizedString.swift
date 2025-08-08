@@ -4,6 +4,7 @@
 //  © 2025 Steffan Andrews • Licensed under MIT License
 //
 
+/// Tokenized string model.
 public struct TokenizedString<Token> {
     public var sequence: [Element]
     
@@ -40,31 +41,36 @@ extension TokenizedString {
 
 // MARK: - Tokenized String
 
-extension TokenizedString where Token: RawRepresentable, Token.RawValue == String {
+extension TokenizedString {
     /// Initializes by decoding a tokenized string.
-    public init(from tokenizedString: String, tokenPrefix: String = "%[", tokenSuffix: String = "]") throws {
+    public init(
+        from tokenized: String,
+        tokenPrefix: String = "%[",
+        tokenSuffix: String = "]",
+        decode: (_ string: String) -> Token?
+    ) throws {
         assert(tokenPrefix != "")
         assert(tokenSuffix != "")
         
         var sequence: [Element] = []
         
-        var index = tokenizedString.startIndex
+        var index = tokenized.startIndex
         
-        while index < tokenizedString.endIndex {
-            if let tokenStart = tokenizedString
-                .range(of: tokenPrefix, options: [], range: index ..< tokenizedString.endIndex, locale: nil)
+        while index < tokenized.endIndex {
+            if let tokenStart = tokenized
+                .range(of: tokenPrefix, options: [], range: index ..< tokenized.endIndex, locale: nil)
             {
-                guard let tokenEnd = tokenizedString
-                    .range(of: tokenSuffix, options: [], range: tokenStart.upperBound ..< tokenizedString.endIndex, locale: nil)
+                guard let tokenEnd = tokenized
+                    .range(of: tokenSuffix, options: [], range: tokenStart.upperBound ..< tokenized.endIndex, locale: nil)
                 else {
                     throw DecodingError.dataCorrupted(
                         DecodingError.Context(codingPath: [], debugDescription: "Encountered token prefix without a corresponding suffix.")
                     )
                 }
                 
-                let tokenString = String(tokenizedString[tokenStart.upperBound ..< tokenEnd.lowerBound])
+                let tokenString = String(tokenized[tokenStart.upperBound ..< tokenEnd.lowerBound])
                 
-                guard let token = Token(rawValue: tokenString) else {
+                guard let token = decode(tokenString) else {
                     throw DecodingError.dataCorrupted(
                         DecodingError.Context(codingPath: [], debugDescription: "Unrecognized token: \(tokenString).")
                     )
@@ -72,16 +78,16 @@ extension TokenizedString where Token: RawRepresentable, Token.RawValue == Strin
                 
                 // add intermediate string if necessary
                 if tokenStart.lowerBound > index {
-                    let string = String(tokenizedString[index ..< tokenStart.lowerBound])
+                    let string = String(tokenized[index ..< tokenStart.lowerBound])
                     sequence.append(.string(string))
                 }
                 
                 sequence.append(.token(token))
                 index = tokenEnd.upperBound
             } else {
-                let string = String(tokenizedString[index ..< tokenizedString.endIndex])
+                let string = String(tokenized[index ..< tokenized.endIndex])
                 sequence.append(.string(string))
-                index = tokenizedString.endIndex
+                index = tokenized.endIndex
             }
         }
         
@@ -89,17 +95,40 @@ extension TokenizedString where Token: RawRepresentable, Token.RawValue == Strin
     }
     
     /// Returns the sequence as a tokenized string.
-    public func tokenizedString(tokenPrefix: String = "%[", tokenSuffix: String = "]") -> String {
+    public func tokenizedString(
+        tokenPrefix: String = "%[",
+        tokenSuffix: String = "]",
+        encode: (_ token: Token) -> String
+    ) -> String {
         assert(tokenPrefix != "")
         assert(tokenSuffix != "")
         
         return sequence
             .map {
                 switch $0 {
-                case let .token(token): tokenPrefix + token.rawValue + tokenSuffix
+                case let .token(token): tokenPrefix + encode(token) + tokenSuffix
                 case let .string(string): string
                 }
             }
             .joined()
+    }
+}
+
+extension TokenizedString where Token: RawRepresentable, Token.RawValue == String {
+    /// Initializes by decoding a tokenized string.
+    public init(
+        from tokenized: String,
+        tokenPrefix: String = "%[",
+        tokenSuffix: String = "]"
+    ) throws {
+        try self.init(from: tokenized, tokenPrefix: tokenPrefix, tokenSuffix: tokenSuffix, decode: { Token(rawValue: $0) })
+    }
+    
+    /// Returns the sequence as a tokenized string.
+    public func tokenizedString(
+        tokenPrefix: String = "%[",
+        tokenSuffix: String = "]"
+    ) -> String {
+        self.tokenizedString(tokenPrefix: tokenPrefix, tokenSuffix: tokenSuffix, encode: { $0.rawValue })
     }
 }

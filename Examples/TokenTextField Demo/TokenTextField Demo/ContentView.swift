@@ -8,6 +8,7 @@ import SwiftUI
 import SwiftUITokenField
 
 struct ContentView: View {
+    @State private var isEditable: Bool = true
     @State private var tokenizedString: TokenizedString<Token> = .preset // .init()
     
     @State private var previewID: UUID = UUID()
@@ -17,7 +18,7 @@ struct ContentView: View {
         Form {
             Section("Token TextField") {
                 VStack(alignment: .leading, spacing: 10) {
-                    TokenTextField($tokenizedString)
+                    TokenTextField($tokenizedString, isEditable: isEditable)
                     Text(previewString).id(previewID)
                 }
                 
@@ -47,6 +48,8 @@ struct ContentView: View {
                         }
                     }
                 }
+                
+                Toggle("Editing Enabled", isOn: $isEditable)
             }
             
             Section("UserDefaults") {

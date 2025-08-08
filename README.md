@@ -100,7 +100,7 @@ var body: some View {
     TokenTextField(
         $tokenizedString,
         completions: [.name: "name", .date: "date", .time: "time"],
-        decode: { token in token.rawValue }
+        decode: { token in token.rawValue },
         encode: { string in Token(rawValue: string) }
     )
 }

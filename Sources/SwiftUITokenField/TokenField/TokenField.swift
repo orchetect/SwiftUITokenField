@@ -40,7 +40,7 @@ public struct TokenField<Token>: View, NSViewRepresentable where Token: Hashable
         cell?.tokenStyle = tokenField.tokenStyle
         
         // set up initial data
-        tokenField.objectValue = tokens.map { decode($0) }
+        tokenField.objectValue = tokens.map { TokenWrapper(token: $0) }
         context.coordinator.tokens = _tokens
         
         return tokenField
@@ -53,7 +53,7 @@ public struct TokenField<Token>: View, NSViewRepresentable where Token: Hashable
             nsView.frame = bounds
         }
         
-        nsView.objectValue = tokens.map { decode($0) }
+        nsView.objectValue = tokens.map { TokenWrapper(token: $0) }
         nsView.isEditable = isEditable
     }
     
@@ -77,14 +77,22 @@ public struct TokenField<Token>: View, NSViewRepresentable where Token: Hashable
             displayStringForRepresentedObject representedObject: Any
         ) -> String? {
             // TODO: allow a different display string than the token's raw identifier string
-            representedObject as? String
+            switch representedObject {
+            case let wrappedToken as TokenWrapper: parent.decode(wrappedToken.token)
+            case let string as String: string
+            default: nil
+            }
         }
         
         public func tokenField(
             _ tokenField: NSTokenField,
             editingStringForRepresentedObject representedObject: Any
         ) -> String? {
-            representedObject as? String
+            switch representedObject {
+            case let wrappedToken as TokenWrapper: parent.decode(wrappedToken.token)
+            case let string as String: string
+            default: nil
+            }
         }
         
         public func tokenField(
@@ -100,7 +108,9 @@ public struct TokenField<Token>: View, NSViewRepresentable where Token: Hashable
             // if token type is non-String, we are limited to valid instances of the token
             
             for case let item as String in tokens {
-                output.append(item)
+                if let token = parent.encode(item) {
+                    output.append(TokenWrapper(token: token))
+                }
             }
             
             return output
@@ -135,8 +145,9 @@ public struct TokenField<Token>: View, NSViewRepresentable where Token: Hashable
                 // print("Control text did change, but object value data unexpected type: \(type(of: textField.objectValue))")
                 return
             }
-            let strings = anyArray.compactMap { $0 as? String }
-            let mapped = strings.compactMap { parent.encode($0) }
+            let mapped = anyArray
+                .compactMap { $0 as? TokenWrapper }
+                .map(\.token)
             self.tokens?.wrappedValue = mapped
         }
         
@@ -150,12 +161,18 @@ public struct TokenField<Token>: View, NSViewRepresentable where Token: Hashable
             nil
         }
     }
+    
+    /// Token wrapper used to differentiate tokens from in-progress user text input,
+    /// since it's possible for Token to be of type `String`.
+    private struct TokenWrapper {
+        var token: Token
+    }
 }
 
 // MARK: - Inits
 
 extension TokenField {
-    /// Initialize
+    /// Initialize by supplying token encoding and decoding logic.
     public init(
         _ tokens: Binding<[Token]>,
         completions: [Token: String] = [:],
@@ -168,6 +185,21 @@ extension TokenField {
         _isEditable = isEditable
         self.decode = decode
         self.encode = encode
+    }
+}
+
+extension TokenField where Token == String {
+    /// Initialize with `String` tokens.
+    public init(
+        _ tokens: Binding<[Token]>,
+        completions: [String] = [],
+        isEditable: Binding<Bool> = .constant(true)
+    ) {
+        _tokens = tokens
+        self.completions = completions.mapToDictionaryKeys(withValues: { $0 })
+        _isEditable = isEditable
+        decode = { $0 }
+        encode = { $0 }
     }
 }
 
@@ -200,33 +232,5 @@ extension TokenField where Token: RawRepresentable, Token.RawValue == String, To
         encode = { Token(rawValue: $0) }
     }
 }
-
-// extension TokenField where Token == String {
-//     public init(
-//         _ tokens: Binding<[Token]>,
-//         completions: [String] = [],
-//         isEditable: Binding<Bool> = .constant(true)
-//     ) {
-//         _tokens = tokens
-//         self.completions = completions.mapToDictionaryKeys(withValues: { $0 })
-//         _isEditable = isEditable
-//         decode = { $0 }
-//         encode = { $0 }
-//     }
-// }
-
-// extension TokenField where Token: StringProtocol {
-//      public init(
-//         _ tokens: Binding<[Token]>,
-//         completions: [Token: String] = [:],
-//         isEditable: Binding<Bool> = .constant(true)
-//      ) {
-//          _tokens = tokens
-//          self.completions = completions
-//          _isEditable = isEditable
-//          decode = { String($0) }
-//          encode = { Token($0) }
-//      }
-// }
 
 #endif

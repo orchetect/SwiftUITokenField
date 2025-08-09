@@ -17,6 +17,7 @@ public struct TokenField<Token>: View, NSViewRepresentable where Token: Hashable
     private var decode: (Token) -> String
     private var encode: (String) -> Token?
     private var completions: [Token: String]
+    private var allowNewStringTokens: Bool
     
     // MARK: - View Creation
     
@@ -108,13 +109,21 @@ public struct TokenField<Token>: View, NSViewRepresentable where Token: Hashable
         ) -> [Any] {
             // TODO: add Bool option to prevent token duplication
             
-            var output: [Any] = []
+            var output: [TokenWrapper] = []
             
             // if token type is String, we can allow arbitrary entry of new tokens not defined
             // if token type is non-String, we are limited to valid instances of the token
             
             for case let item as String in tokens {
                 if let token = parent.encode(item) {
+                    // reject new String token if not allowed
+                    if Token.self is String,
+                        !parent.allowNewStringTokens,
+                        !parent.completions.keys.contains(token)
+                    {
+                        continue
+                    }
+                    
                     output.append(TokenWrapper(token: token))
                 }
             }
@@ -191,6 +200,7 @@ extension TokenField {
         _isEditable = isEditable
         self.decode = decode
         self.encode = encode
+        allowNewStringTokens = false // unused
     }
 }
 
@@ -199,6 +209,7 @@ extension TokenField where Token == String {
     public init(
         _ tokens: Binding<[Token]>,
         completions: [String] = [],
+        allowNewTokens: Bool = true,
         isEditable: Binding<Bool> = .constant(true)
     ) {
         _tokens = tokens
@@ -206,6 +217,7 @@ extension TokenField where Token == String {
         _isEditable = isEditable
         decode = { $0 }
         encode = { $0 }
+        allowNewStringTokens = allowNewTokens
     }
 }
 
@@ -221,6 +233,7 @@ extension TokenField where Token: RawRepresentable, Token.RawValue == String {
         _isEditable = isEditable
         decode = { $0.rawValue }
         encode = { Token(rawValue: $0) }
+        allowNewStringTokens = false // unused
     }
 }
 
@@ -236,6 +249,7 @@ extension TokenField where Token: RawRepresentable, Token.RawValue == String, To
         _isEditable = isEditable
         decode = { $0.rawValue }
         encode = { Token(rawValue: $0) }
+        allowNewStringTokens = false // unused
     }
 }
 

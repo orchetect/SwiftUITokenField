@@ -114,7 +114,7 @@ public struct TokenTextField<Token>: View, NSViewRepresentable where Token: Hash
         ) -> [Any] {
             // TODO: add Bool option to prevent token duplication
             
-            var output: [Any] = []
+            var output: [Any] = [] // TODO: may need to refactor using TokenWrapper from TokenField to avoid typing issues when `Token` is `String`
             
             for token in tokens {
                 if let cast = token as? Token {

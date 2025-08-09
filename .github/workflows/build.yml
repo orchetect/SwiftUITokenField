@@ -61,7 +61,7 @@ jobs:
       with:
         xcode-version: latest-stable
     
-    - name: Token Demo - Resolve Package Dependencies # needed because sometimes xcodebuild fails otherwise
-      run: xcodebuild -project "Examples/Token Demo/Token Demo.xcodeproj" -resolvePackageDependencies | xcbeautify && exit ${PIPESTATUS[0]}
-    - name: Token Demo - Build
-      run: xcodebuild build -project "Examples/Token Demo/Token Demo.xcodeproj" -scheme "Token Demo" -destination "generic/platform=macOS,name=Any Mac" | xcbeautify && exit ${PIPESTATUS[0]}
+    - name: TokenTextField Demo - Resolve Package Dependencies # needed because sometimes xcodebuild fails otherwise
+      run: xcodebuild -project "Examples/TokenTextField Demo/TokenTextField Demo.xcodeproj" -resolvePackageDependencies | xcbeautify && exit ${PIPESTATUS[0]}
+    - name: TokenTextField Demo - Build
+      run: xcodebuild build -project "Examples/TokenTextField Demo/TokenTextField Demo.xcodeproj" -scheme "TokenTextField Demo" -destination "generic/platform=macOS,name=Any Mac" | xcbeautify && exit ${PIPESTATUS[0]}

@@ -53,7 +53,13 @@ public struct TokenTextField<Token>: View, NSViewRepresentable where Token: Hash
         }
         
         nsView.objectValue = unwrap(tokens: tokens)
+        
+        let wasEditable = nsView.isEditable
         nsView.isEditable = isEditable
+        if wasEditable, !isEditable {
+            // print("Removing focus from token field.")
+            nsView.removeFirstResponderIfFocused()
+        }
     }
     
     // MARK: - Coordinator

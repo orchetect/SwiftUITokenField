@@ -19,3 +19,30 @@ extension Sequence where Element: Hashable {
         }
     }
 }
+
+#if os(macOS)
+
+import AppKit
+
+extension NSTokenField {
+    /// Returns true if the token field or any of its subviews are currently the first responder.
+    @MainActor
+    var isFirstResponder: Bool {
+        guard let responder = window?.firstResponder else { return false }
+        return responder == self
+            || responder == cell
+            || responder.nextResponder?.nextResponder == self // typically the nested NSTextEditView
+    }
+    
+    @MainActor
+    func removeFirstResponderIfFocused() {
+        guard isFirstResponder else { return }
+        
+        DispatchQueue.main.async {
+            let target = self.superview ?? self.window
+            self.window?.makeFirstResponder(target)
+        }
+    }
+}
+
+#endif

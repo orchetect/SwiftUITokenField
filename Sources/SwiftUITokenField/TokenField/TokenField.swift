@@ -18,6 +18,7 @@ public struct TokenField<Token>: View, NSViewRepresentable where Token: Hashable
     private var encode: (String) -> Token?
     private var completions: [Token: String]
     private var allowNewStringTokens: Bool
+    private var allowDuplicateTokens: Bool
     
     // MARK: - View Creation
     
@@ -124,6 +125,14 @@ public struct TokenField<Token>: View, NSViewRepresentable where Token: Hashable
                         continue
                     }
                     
+                    // reject duplicate token if not allowed
+                    if !parent.allowDuplicateTokens,
+                       self.tokens?.wrappedValue.contains(token) == true
+                    {
+                        // print("Rejecting duplicate token: \(token)")
+                        continue
+                    }
+                    
                     output.append(TokenWrapper(token: token))
                 }
             }
@@ -191,6 +200,7 @@ extension TokenField {
     public init(
         _ tokens: Binding<[Token]>,
         completions: [Token: String] = [:],
+        allowDuplicateTokens: Bool = false,
         isEditable: Binding<Bool> = .constant(true),
         decode: @escaping (_ token: Token) -> String,
         encode: @escaping (_ string: String) -> Token?
@@ -201,6 +211,7 @@ extension TokenField {
         self.decode = decode
         self.encode = encode
         allowNewStringTokens = false // unused
+        self.allowDuplicateTokens = allowDuplicateTokens
     }
 }
 
@@ -210,6 +221,7 @@ extension TokenField where Token == String {
         _ tokens: Binding<[Token]>,
         completions: [String] = [],
         allowNewTokens: Bool = true,
+        allowDuplicateTokens: Bool = false,
         isEditable: Binding<Bool> = .constant(true)
     ) {
         _tokens = tokens
@@ -218,6 +230,7 @@ extension TokenField where Token == String {
         decode = { $0 }
         encode = { $0 }
         allowNewStringTokens = allowNewTokens
+        self.allowDuplicateTokens = allowDuplicateTokens
     }
 }
 
@@ -226,6 +239,7 @@ extension TokenField where Token: RawRepresentable, Token.RawValue == String {
     public init(
         _ tokens: Binding<[Token]>,
         completions: [Token: String] = [:],
+        allowDuplicateTokens: Bool = false,
         isEditable: Binding<Bool> = .constant(true)
     ) {
         _tokens = tokens
@@ -234,6 +248,7 @@ extension TokenField where Token: RawRepresentable, Token.RawValue == String {
         decode = { $0.rawValue }
         encode = { Token(rawValue: $0) }
         allowNewStringTokens = false // unused
+        self.allowDuplicateTokens = allowDuplicateTokens
     }
 }
 
@@ -242,6 +257,7 @@ extension TokenField where Token: RawRepresentable, Token.RawValue == String, To
     /// based on its raw value and auto-populating completions.
     public init(
         _ tokens: Binding<[Token]>,
+        allowDuplicateTokens: Bool = false,
         isEditable: Binding<Bool> = .constant(true)
     ) {
         _tokens = tokens
@@ -250,6 +266,7 @@ extension TokenField where Token: RawRepresentable, Token.RawValue == String, To
         decode = { $0.rawValue }
         encode = { Token(rawValue: $0) }
         allowNewStringTokens = false // unused
+        self.allowDuplicateTokens = allowDuplicateTokens
     }
 }
 

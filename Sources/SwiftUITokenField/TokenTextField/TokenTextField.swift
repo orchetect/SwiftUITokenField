@@ -48,8 +48,8 @@ public struct TokenTextField<Token>: View, NSViewRepresentable where Token: Hash
     // MARK: - View Update
     
     public func updateNSView(_ nsView: NSTokenField, context: Context) {
-        if let b = nsView.superview?.bounds {
-            nsView.frame = b
+        if let bounds = nsView.superview?.bounds {
+            nsView.frame = bounds
         }
         
         nsView.objectValue = unwrap(tokens: tokens)
@@ -155,14 +155,14 @@ public struct TokenTextField<Token>: View, NSViewRepresentable where Token: Hash
         }
         
         public func controlTextDidChange(_ obj: Notification) {
-            guard let tf = obj.object as? NSTokenField else {
+            guard let textField = obj.object as? NSTokenField else {
                 // print("Control text did change, but object not a token field")
                 return
             }
-            guard let anyArray = tf.objectValue as? [Any],
+            guard let anyArray = textField.objectValue as? [Any],
                   let mapped = mapToTokensElements(anyArray)
             else {
-                // print("Control text did change, but object value data unexpected type: \(type(of: tf.objectValue))")
+                // print("Control text did change, but encountered unexpected type: \(type(of: textField.objectValue))")
                 return
             }
             self.tokens?.wrappedValue.sequence = mapped

@@ -212,7 +212,7 @@ public struct TokenTextField<Token>: View, NSViewRepresentable where Token: Hash
 // MARK: - Inits
 
 extension TokenTextField {
-    /// Initialize
+    /// Initialize by supplying token encoding and decoding logic.
     public init(
         _ tokens: Binding<TokenizedString<Token>>,
         completions: [Token: String] = [:],

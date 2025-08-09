@@ -227,7 +227,7 @@ extension TokenTextField where Token: RawRepresentable, Token.RawValue == String
     public init(
         _ tokens: Binding<TokenizedString<Token>>,
         completions: [Token: String] = [:],
-        isEditable: Bool = true,
+        isEditable: Bool = true
     ) {
         _tokens = tokens
         self.completions = completions
@@ -254,7 +254,11 @@ extension TokenTextField where Token: RawRepresentable, Token.RawValue == String
 
 // TODO: works, but is not useful or relevant since our token field is treated as a text field, so this would result in tokenizing all strings as tokens which is meaningless.
 // extension TokenTextField where Token == String {
-//     public init(_ tokens: Binding<TokenizedString<Token>>, completions: [String] = [], isEditable: Bool = true) {
+//     public init(
+//         _ tokens: Binding<[Token]>,
+//         completions: [String] = [],
+//         isEditable: Bool = true
+//     ) {
 //         _tokens = tokens
 //         self.completions = completions.mapToDictionaryKeys(withValues: { $0 })
 //         self.isEditable = isEditable

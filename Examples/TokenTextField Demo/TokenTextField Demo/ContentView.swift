@@ -49,7 +49,7 @@ struct ContentView: View {
                     }
                 }
                 
-                Toggle("Editing Enabled", isOn: $isEditable)
+                Toggle("Editable", isOn: $isEditable)
             }
             
             Section("UserDefaults") {

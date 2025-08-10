@@ -50,6 +50,9 @@ public struct TokenTextField<Token>: View, NSViewRepresentable where Token: Hash
         
         // data
         nsView.objectValue = unwrap(tokens: tokens)
+        if !allowDuplicateTokens {
+            DispatchQueue.main.async { context.coordinator.removeDuplicateTokens() }
+        }
         
         // editable
         let wasEditable = nsView.isEditable
@@ -200,6 +203,14 @@ public struct TokenTextField<Token>: View, NSViewRepresentable where Token: Hash
                 }
             }
             return mapped
+        }
+        
+        func removeDuplicateTokens() {
+            let tokens = parent._tokens.wrappedValue.sequence.removingDuplicates()
+            
+            if parent._tokens.wrappedValue.sequence != tokens {
+                parent._tokens.wrappedValue.sequence = tokens
+            }
         }
     }
     

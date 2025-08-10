@@ -3,8 +3,6 @@
 //  SwiftUITokenField • https://github.com/orchetect/SwiftUITokenField
 //  © 2025 Steffan Andrews • Licensed under MIT License
 //
-//  Created by Steffan Andrews on 2025-08-07.
-//
 
 extension Sequence where Element: Hashable {
     func mapToDictionaryValues<T>(withKeys key: (Element) -> T) -> [T: Element] {
@@ -17,6 +15,25 @@ extension Sequence where Element: Hashable {
         reduce(into: [:]) { base, element in
             base[element] = value(element)
         }
+    }
+}
+
+extension RangeReplaceableCollection where Self: RandomAccessCollection, Element: Equatable {
+    mutating func removeDuplicates() {
+        guard var index = indices.last else { return }
+        while count > 1, index > startIndex {
+            let element = self[index]
+            if self[startIndex ..< index].contains(element) {
+                self.remove(at: index)
+            }
+            index = self.index(before: index)
+        }
+    }
+    
+    func removingDuplicates() -> Self {
+        var copy = self
+        copy.removeDuplicates()
+        return copy
     }
 }
 

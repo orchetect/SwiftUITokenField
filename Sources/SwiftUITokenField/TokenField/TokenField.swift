@@ -53,6 +53,9 @@ public struct TokenField<Token>: View, NSViewRepresentable where Token: Hashable
         
         // data
         nsView.objectValue = tokens.map { TokenWrapper(token: $0) }
+        if !allowDuplicateTokens {
+            DispatchQueue.main.async { context.coordinator.removeDuplicateTokens() }
+        }
         
         // editable
         let wasEditable = nsView.isEditable
@@ -177,6 +180,14 @@ public struct TokenField<Token>: View, NSViewRepresentable where Token: Hashable
         // not used
         public func tokenField(_ tokenField: NSTokenField, menuForRepresentedObject representedObject: Any) -> NSMenu? {
             nil
+        }
+        
+        func removeDuplicateTokens() {
+            let tokens = parent._tokens.wrappedValue.removingDuplicates()
+            
+            if parent._tokens.wrappedValue != tokens {
+                parent._tokens.wrappedValue = tokens
+            }
         }
     }
     

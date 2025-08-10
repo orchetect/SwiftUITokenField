@@ -147,7 +147,7 @@ Add this package to your Xcode project or Swift package using `https://github.co
 
 ## Documentation / Examples
 
-There is no format documentation at this time, but most types and methods in the package have inline documentation to help explain their purpose.
+There is no formal documentation at this time, but most types and methods in the package have inline documentation to help explain their purpose.
 
 See the [Examples](Examples) folder for a quick way to get started.
 

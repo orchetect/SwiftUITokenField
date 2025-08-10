@@ -81,7 +81,7 @@ public struct TokenTextField<Token>: View, NSViewRepresentable where Token: Hash
             displayStringForRepresentedObject representedObject: Any
         ) -> String? {
             switch representedObject {
-            case let token as Token: parent.decode(token)
+            case let wrappedToken as TokenWrapper: parent.decode(wrappedToken.token)
             case let string as String: string
             default: nil
             }
@@ -92,7 +92,7 @@ public struct TokenTextField<Token>: View, NSViewRepresentable where Token: Hash
             editingStringForRepresentedObject representedObject: Any
         ) -> String? {
             switch representedObject {
-            case let token as Token: parent.decode(token)
+            case let wrappedToken as TokenWrapper: parent.decode(wrappedToken.token)
             case let string as String: string
             default: nil
             }
@@ -111,7 +111,7 @@ public struct TokenTextField<Token>: View, NSViewRepresentable where Token: Hash
             shouldAdd tokens: [Any],
             at index: Int
         ) -> [Any] {
-            var output: [Any] = [] // TODO: may need to refactor using TokenWrapper from TokenField to avoid typing issues when `Token` is `String`
+            var output: [Any] = []
             
             func add(token: Token) {
                 // reject duplicate token if not allowed
@@ -121,24 +121,33 @@ public struct TokenTextField<Token>: View, NSViewRepresentable where Token: Hash
                     // print("Rejecting duplicate token: \(token)")
                     return
                 }
-                output.append(token)
+                output.append(TokenWrapper(token: token))
             }
             
             for token in tokens {
-                if let cast = token as? Token {
-                    // print("Cast as token: \(String(describing: cast))")
-                    output.append(cast)
-                } else if let string = token as? String {
-                    // try converting to token first
-                    if let cast = parent.encode(string) {
-                        // print("Converted string to token: \(String(describing: cast))")
-                        add(token: cast)
+                // handle `Token is String` separately
+                if let string = token as? Token, string is String {
+                    // only allow completions to be tokens
+                    if parent.completions.keys.contains(string) {
+                        add(token: string)
                     } else {
-                        // print("Cast as string: \(String(describing: string))")
                         output.append(string)
                     }
+                
+                // Otherwise, we can differentiate non-String Token easier
                 } else {
-                    // print("Unhandled token object: \(String(describing: token))")
+                    if let cast = token as? Token {
+                        add(token: cast)
+                    } else if let string = token as? String {
+                        // try converting to token first
+                        if let cast = parent.encode(string) {
+                            add(token: cast)
+                        } else {
+                            output.append(string)
+                        }
+                    } else {
+                        // print("Unhandled token object: \(String(describing: token))")
+                    }
                 }
             }
             
@@ -150,7 +159,7 @@ public struct TokenTextField<Token>: View, NSViewRepresentable where Token: Hash
             styleForRepresentedObject representedObject: Any
         ) -> NSTokenField.TokenStyle {
             switch representedObject {
-            case is Token: .rounded
+            case is TokenWrapper: .rounded
             case is String: .none
             default: .none
             }
@@ -179,7 +188,7 @@ public struct TokenTextField<Token>: View, NSViewRepresentable where Token: Hash
                 // print("Control text did change, but encountered unexpected type: \(type(of: textField.objectValue))")
                 return
             }
-            parent._tokens.wrappedValue.sequence = mapped
+            parent._tokens.wrappedValue.sequence = mapped // TODO: async on main?
         }
         
         // not used
@@ -197,7 +206,7 @@ public struct TokenTextField<Token>: View, NSViewRepresentable where Token: Hash
             var mapped: [TokenizedString<Token>.Element] = []
             for object in objects {
                 switch object {
-                case let token as Token: mapped.append(.token(token))
+                case let wrappedToken as TokenWrapper: mapped.append(.token(wrappedToken.token))
                 case let string as String: mapped.append(.string(string))
                 default: return nil
                 }
@@ -218,10 +227,16 @@ public struct TokenTextField<Token>: View, NSViewRepresentable where Token: Hash
     func unwrap(tokens: TokenizedString<Token>) -> [Any] {
         tokens.sequence.map {
             switch $0 {
-            case let .token(token): token
+            case let .token(token): TokenWrapper(token: token)
             case let .string(string): string
             }
         }
+    }
+    
+    /// Token wrapper used to differentiate tokens from in-progress user text input,
+    /// since it's possible for Token to be of type `String`.
+    private struct TokenWrapper {
+        var token: Token
     }
 }
 

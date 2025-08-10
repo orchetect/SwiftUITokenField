@@ -9,6 +9,7 @@ import SwiftUITokenField
 
 struct ContentView: View {
     @State private var isEditable: Bool = true
+    @State private var isDuplicateTokensAllowed: Bool = true
     @State private var tokenizedString: TokenizedString<Token> = .preset // .init()
     
     @State private var previewID: UUID = UUID()
@@ -18,8 +19,15 @@ struct ContentView: View {
         Form {
             Section("Token TextField") {
                 VStack(alignment: .leading, spacing: 10) {
-                    TokenTextField($tokenizedString, isEditable: isEditable)
-                    Text(previewString).id(previewID)
+                    TokenTextField(
+                        $tokenizedString,
+                        allowDuplicateTokens: isDuplicateTokensAllowed,
+                        isEditable: isEditable
+                    )
+                    .id(isDuplicateTokensAllowed) // force refresh when option is toggled
+                    
+                    Text(previewString)
+                        .id(previewID) // force refresh on a timer for date/time token updates
                 }
                 
                 LabeledContent("Append Token from Menu") {
@@ -50,6 +58,8 @@ struct ContentView: View {
                 }
                 
                 Toggle("Editable", isOn: $isEditable)
+                
+                Toggle("Allow Duplicate Tokens", isOn: $isDuplicateTokensAllowed)
             }
             
             Section("UserDefaults") {

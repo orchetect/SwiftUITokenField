@@ -121,7 +121,7 @@ extension TokenizedString where Token == String {
         tokenPrefix: String = "%[",
         tokenSuffix: String = "]"
     ) throws {
-        try self.init(from: tokenized, tokenPrefix: tokenPrefix, tokenSuffix: tokenSuffix)
+        try self.init(from: tokenized, tokenPrefix: tokenPrefix, tokenSuffix: tokenSuffix, decode: { $0 })
     }
     
     /// Returns the sequence as a tokenized string.
@@ -129,12 +129,13 @@ extension TokenizedString where Token == String {
         tokenPrefix: String = "%[",
         tokenSuffix: String = "]"
     ) -> String {
-        self.tokenizedString(tokenPrefix: tokenPrefix, tokenSuffix: tokenSuffix)
+        self.tokenizedString(tokenPrefix: tokenPrefix, tokenSuffix: tokenSuffix, encode: { $0 })
     }
 }
 
 extension TokenizedString where Token: RawRepresentable, Token.RawValue == String {
     /// Initializes by decoding a tokenized string.
+    @_disfavoredOverload
     public init(
         from tokenized: String,
         tokenPrefix: String = "%[",
@@ -144,6 +145,7 @@ extension TokenizedString where Token: RawRepresentable, Token.RawValue == Strin
     }
     
     /// Returns the sequence as a tokenized string.
+    @_disfavoredOverload
     public func tokenizedString(
         tokenPrefix: String = "%[",
         tokenSuffix: String = "]"

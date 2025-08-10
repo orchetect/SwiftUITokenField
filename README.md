@@ -15,8 +15,8 @@ The user may be allowed to define custom tokens, or tokens may be restricted to 
 - Supports text entry auto-complete for tokens
 - Token substitutions may be shown in place of their raw token identifier if desired
 - Tokens may also be added programmatically from a menu, or using drag & drop from a list of tokens in the UI
-- Token entry be restricted to only unique tokens, disallowing duplicate tokens
-- Editing can be disabled to allow the view to act as a read-only label
+- Token entry can be restricted to only one use per token, disallowing duplicate usage of tokens
+- Editing can be disabled to allow the field to act as a read-only label
 
 ## Token TextField
 
@@ -29,8 +29,8 @@ This field allows the user to define a token-substitution string template.
 - Supports text entry auto-complete for tokens
 - Token substitutions may be shown in place of their raw token identifier if desired
 - Tokens may also be added programmatically from a menu, or using drag & drop from a list of tokens in the UI
-- Token entry be restricted to only unique tokens, disallowing duplicate tokens
-- Editing can be disabled to allow the view to act as a read-only label
+- Token entry can be restricted to only one use per token, disallowing duplicate usage of tokens
+- Editing can be disabled to allow the field to act as a read-only label
 - Methods for encoding/decoding tokenized strings
 
 ## Sample Usage

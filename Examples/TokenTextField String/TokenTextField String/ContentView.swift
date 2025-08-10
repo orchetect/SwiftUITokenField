@@ -1,0 +1,173 @@
+//
+//  ContentView.swift
+//  SwiftUITokenField • https://github.com/orchetect/SwiftUITokenField
+//  © 2025 Steffan Andrews • Licensed under MIT License
+//
+
+import SwiftUI
+import SwiftUITokenField
+
+struct ContentView: View {
+    @State private var isEditable: Bool = true
+    @State private var isDuplicateTokensAllowed: Bool = true
+    @State private var tokenizedString: TokenizedString<String> = .preset // .init()
+    
+    var body: some View {
+        Form {
+            Section("Token TextField") {
+                VStack(alignment: .leading, spacing: 10) {
+                    TokenTextField(
+                        $tokenizedString,
+                        allowDuplicateTokens: isDuplicateTokensAllowed,
+                        isEditable: isEditable
+                    )
+                    .id(isDuplicateTokensAllowed) // force refresh when option is toggled
+                    
+                    TokenSubstitutionPreviewView(tokenizedString: $tokenizedString)
+                }
+                
+                LabeledContent("Append Token from Menu") {
+                    Menu {
+                        ForEach(FactoryTokens.allTokens(), id: \.self) { token in
+                            Button(token) {
+                                tokenizedString.sequence.append(.token(token))
+                            }
+                        }
+                    } label: {
+                        Text("Tokens")
+                    }
+                    .frame(width: 80)
+                    .multilineTextAlignment(.trailing)
+                }
+                
+                LabeledContent("Insert Token by Dragging") {
+                    HStack {
+                        ForEach(FactoryTokens.allTokens(), id: \.self) { token in
+                            Text(token)
+                                .textSelection(.disabled)
+                                .padding([.leading, .trailing], 5)
+                                .background(.tertiary)
+                                .border(.secondary)
+                                .draggable(token)
+                        }
+                    }
+                }
+                
+                Toggle("Editable", isOn: $isEditable)
+                
+                Toggle("Allow Duplicate Tokens", isOn: $isDuplicateTokensAllowed)
+            }
+            
+            Section("UserDefaults") {
+                LabeledContent("Tokenized String") {
+                    Button("Save") { saveTokenizedString() }
+                    Button("Load") { loadTokenizedString() }
+                }
+                LabeledContent("Codable JSON") {
+                    Button("Save") { saveCodableJSON() }
+                    Button("Load") { loadCodableJSON() }
+                }
+            }
+        }
+        .formStyle(.grouped)
+        .padding()
+    }
+}
+
+// MARK: - Serialization
+
+extension ContentView {
+    private func saveCodableJSON() {
+        do {
+            let encoder = JSONEncoder()
+            let encodedData = try encoder.encode(tokenizedString)
+            if let jsonString = String(data: encodedData, encoding: .utf8) {
+                print("Saving JSON: \(jsonString)")
+            }
+            UserDefaults.standard.set(encodedData, forKey: "savedTokensJSON")
+        } catch {
+            print(error.localizedDescription)
+        }
+    }
+    
+    private func loadCodableJSON() {
+        do {
+            let decoder = JSONDecoder()
+            guard let encodedData = UserDefaults.standard.data(forKey: "savedTokensJSON") else { return }
+            if let jsonString = String(data: encodedData, encoding: .utf8) {
+                print("Loading JSON: \(jsonString)")
+            }
+            let decoded = try decoder.decode(TokenizedString<String>.self, from: encodedData)
+            tokenizedString = decoded
+        } catch {
+            print(error.localizedDescription)
+        }
+    }
+    
+    private func saveTokenizedString() {
+        let encoded = tokenizedString.tokenizedString()
+        print("Saving tokenized string: \"\(encoded)\"")
+        UserDefaults.standard.set(encoded, forKey: "savedTokenizedString")
+    }
+    
+    private func loadTokenizedString() {
+        do {
+            guard let encoded = UserDefaults.standard.string(forKey: "savedTokenizedString") else { return }
+            print("Loading tokenized string: \"\(encoded)\"")
+            tokenizedString = try TokenizedString<String>(from: encoded)
+        } catch {
+            print(error.localizedDescription)
+        }
+    }
+}
+
+// MARK: - Mock Data
+
+extension TokenizedString<String> {
+    /// Sample data for the demo.
+    static let preset = Self([
+        .string("Something is "),
+        .token(FactoryTokens.foobar),
+        .string(" at "),
+        .token(FactoryTokens.time),
+        .string(" on "),
+        .token(FactoryTokens.date),
+        .string(".")
+    ])
+}
+
+// MARK: - Auto-Updating String Preview
+
+struct TokenSubstitutionPreviewView: View {
+    @Binding var tokenizedString: TokenizedString<String>
+    
+    @State private var previewID: UUID = UUID()
+    @State private var updateTimer: Task<Void, any Error>?
+    
+    var body: some View {
+        Text(previewString)
+            .id(previewID)
+            .onAppear { startTimer() }
+            .onDisappear { stopTimer() }
+    }
+    
+    private var previewString: String {
+        tokenizedString.string { token in token.tokenSubstitution }
+    }
+    
+    private func startTimer() {
+        updateTimer?.cancel()
+        // since we're using date and time tokens, this timer is only needed to update UI in real-time
+        updateTimer = Task {
+            while !Task.isCancelled {
+                previewID = UUID()
+                try await Task.sleep(for: .seconds(1))
+            }
+        }
+    }
+    
+    private func stopTimer() {
+        updateTimer?.cancel()
+        updateTimer = nil
+    }
+}

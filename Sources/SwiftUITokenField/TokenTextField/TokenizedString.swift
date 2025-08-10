@@ -132,3 +132,18 @@ extension TokenizedString where Token: RawRepresentable, Token.RawValue == Strin
         self.tokenizedString(tokenPrefix: tokenPrefix, tokenSuffix: tokenSuffix, encode: { $0.rawValue })
     }
 }
+
+// MARK: - Sequence Category Methods
+
+extension TokenizedString where Element: Equatable {
+    /// Returns true if the sequence contains the given token.
+    public func contains(_ token: Token) -> Bool {
+        sequence.contains(where: { $0 == token })
+    }
+    
+    /// Returns true if the sequence contains the given plain-text string.
+    @_disfavoredOverload
+    public func contains(_ string: String) -> Bool {
+        sequence.contains(where: { $0 == .string(string) })
+    }
+}

@@ -34,4 +34,23 @@ extension TokenizedString.Element where Token: RawRepresentable, Token.RawValue 
     }
 }
 
+// MARK: - Additional Equatable methods
+
+extension TokenizedString.Element where Token: Equatable {
+    public static func == (lhs: Self, rhs: Token) -> Bool {
+        lhs == .token(rhs)
+    }
+    
+    public static func == (lhs: Token, rhs: Self) -> Bool {
+        .token(lhs) == rhs
+    }
+}
+
+extension TokenizedString.Element where Token == String {
+    /// Returns true if either the token string or the plain-text string matches the given predicate.
+    public func isEqual(toTokenOrString string: String) -> Bool {
+        self == .token(string) || self == .string(string)
+    }
+}
+
 #endif

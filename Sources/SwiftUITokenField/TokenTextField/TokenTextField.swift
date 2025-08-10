@@ -51,7 +51,7 @@ public struct TokenTextField<Token>: View, NSViewRepresentable where Token: Hash
         // data
         nsView.objectValue = unwrap(tokens: tokens)
         if !allowDuplicateTokens {
-            DispatchQueue.main.async { context.coordinator.removeDuplicateTokens() }
+            context.coordinator.removeDuplicateTokens() // runs async on main
         }
         
         // editable
@@ -189,7 +189,10 @@ public struct TokenTextField<Token>: View, NSViewRepresentable where Token: Hash
                 // print("Control text did change, but encountered unexpected type: \(type(of: textField.objectValue))")
                 return
             }
-            parent._tokens.wrappedValue.sequence = mapped // TODO: async on main?
+            
+            DispatchQueue.main.async {
+                self.parent._tokens.wrappedValue.sequence = mapped
+            }
         }
         
         // not used
@@ -216,10 +219,12 @@ public struct TokenTextField<Token>: View, NSViewRepresentable where Token: Hash
         }
         
         func removeDuplicateTokens() {
-            let tokens = parent._tokens.wrappedValue.sequence.removingDuplicates()
-            
-            if parent._tokens.wrappedValue.sequence != tokens {
-                parent._tokens.wrappedValue.sequence = tokens
+            DispatchQueue.main.async {
+                let tokens = self.parent._tokens.wrappedValue.sequence.removingDuplicates()
+                
+                if self.parent._tokens.wrappedValue.sequence != tokens {
+                    self.parent._tokens.wrappedValue.sequence = tokens
+                }
             }
         }
     }

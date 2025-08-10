@@ -54,7 +54,7 @@ public struct TokenField<Token>: View, NSViewRepresentable where Token: Hashable
         // data
         nsView.objectValue = tokens.map { TokenWrapper(token: $0) }
         if !allowDuplicateTokens {
-            DispatchQueue.main.async { context.coordinator.removeDuplicateTokens() }
+            context.coordinator.removeDuplicateTokens() // runs async on main
         }
         
         // editable
@@ -66,7 +66,7 @@ public struct TokenField<Token>: View, NSViewRepresentable where Token: Hashable
         }
         
         if !allowNewStringTokens {
-            DispatchQueue.main.async { context.coordinator.removeNewTokens() }
+            context.coordinator.removeNewTokens() // runs async on main
         }
     }
     
@@ -175,7 +175,9 @@ public struct TokenField<Token>: View, NSViewRepresentable where Token: Hashable
                 .compactMap { $0 as? TokenWrapper }
                 .map(\.token)
             
-            parent._tokens.wrappedValue = mapped // TODO: async on main?
+            DispatchQueue.main.async {
+                self.parent._tokens.wrappedValue = mapped
+            }
         }
         
         // not used
@@ -189,22 +191,26 @@ public struct TokenField<Token>: View, NSViewRepresentable where Token: Hashable
         }
         
         func removeDuplicateTokens() {
-            let tokens = parent._tokens.wrappedValue.removingDuplicates()
-            
-            if parent._tokens.wrappedValue != tokens {
-                parent._tokens.wrappedValue = tokens
+            DispatchQueue.main.async {
+                let tokens = self.parent._tokens.wrappedValue.removingDuplicates()
+                
+                if self.parent._tokens.wrappedValue != tokens {
+                    self.parent._tokens.wrappedValue = tokens
+                }
             }
         }
         
         func removeNewTokens() {
-            var tokens = parent._tokens.wrappedValue
-            
-            tokens.removeAll {
-                !parent.completions.keys.contains($0)
-            }
-            
-            if parent._tokens.wrappedValue != tokens {
-                parent._tokens.wrappedValue = tokens
+            DispatchQueue.main.async {
+                var tokens = self.parent._tokens.wrappedValue
+                
+                tokens.removeAll {
+                    !self.parent.completions.keys.contains($0)
+                }
+                
+                if self.parent._tokens.wrappedValue != tokens {
+                    self.parent._tokens.wrappedValue = tokens
+                }
             }
         }
     }

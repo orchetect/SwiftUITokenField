@@ -61,7 +61,22 @@ jobs:
       with:
         xcode-version: latest-stable
     
-    - name: TokenTextField Demo - Resolve Package Dependencies # needed because sometimes xcodebuild fails otherwise
-      run: xcodebuild -project "Examples/TokenTextField Demo/TokenTextField Demo.xcodeproj" -resolvePackageDependencies | xcbeautify && exit ${PIPESTATUS[0]}
-    - name: TokenTextField Demo - Build
-      run: xcodebuild build -project "Examples/TokenTextField Demo/TokenTextField Demo.xcodeproj" -scheme "TokenTextField Demo" -destination "generic/platform=macOS,name=Any Mac" | xcbeautify && exit ${PIPESTATUS[0]}
+    - name: TokenField Enum - Resolve Package Dependencies # needed because sometimes xcodebuild fails otherwise
+      run: xcodebuild -project "Examples/TokenField Enum/TokenField Enum.xcodeproj" -resolvePackageDependencies | xcbeautify && exit ${PIPESTATUS[0]}
+    - name: TokenField Enum - Build
+      run: xcodebuild build -project "Examples/TokenField Enum/TokenField Enum.xcodeproj" -scheme "TokenField Enum" -destination "generic/platform=macOS,name=Any Mac" | xcbeautify && exit ${PIPESTATUS[0]}
+    
+    - name: TokenField String - Resolve Package Dependencies # needed because sometimes xcodebuild fails otherwise
+      run: xcodebuild -project "Examples/TokenField String/TokenField String.xcodeproj" -resolvePackageDependencies | xcbeautify && exit ${PIPESTATUS[0]}
+    - name: TokenField String - Build
+      run: xcodebuild build -project "Examples/TokenField String/TokenField String.xcodeproj" -scheme "TokenField String" -destination "generic/platform=macOS,name=Any Mac" | xcbeautify && exit ${PIPESTATUS[0]}
+    
+    - name: TokenTextField Enum - Resolve Package Dependencies # needed because sometimes xcodebuild fails otherwise
+      run: xcodebuild -project "Examples/TokenTextField Enum/TokenTextField Enum.xcodeproj" -resolvePackageDependencies | xcbeautify && exit ${PIPESTATUS[0]}
+    - name: TokenTextField Enum - Build
+      run: xcodebuild build -project "Examples/TokenTextField Enum/TokenTextField Enum.xcodeproj" -scheme "TokenTextField Enum" -destination "generic/platform=macOS,name=Any Mac" | xcbeautify && exit ${PIPESTATUS[0]}
+    
+    - name: TokenTextField String - Resolve Package Dependencies # needed because sometimes xcodebuild fails otherwise
+      run: xcodebuild -project "Examples/TokenTextField String/TokenTextField String.xcodeproj" -resolvePackageDependencies | xcbeautify && exit ${PIPESTATUS[0]}
+    - name: TokenTextField String - Build
+      run: xcodebuild build -project "Examples/TokenTextField String/TokenTextField String.xcodeproj" -scheme "TokenTextField String" -destination "generic/platform=macOS,name=Any Mac" | xcbeautify && exit ${PIPESTATUS[0]}

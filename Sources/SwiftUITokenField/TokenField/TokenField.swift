@@ -65,6 +65,7 @@ public struct TokenField<Token>: View, NSViewRepresentable where Token: Hashable
             nsView.removeFirstResponderIfFocused()
         }
         
+        // restrict new tokens
         if !allowNewStringTokens {
             context.coordinator.removeNewTokens() // runs async on main
         }

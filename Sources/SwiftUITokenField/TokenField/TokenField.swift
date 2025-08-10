@@ -170,10 +170,12 @@ public struct TokenField<Token>: View, NSViewRepresentable where Token: Hashable
                 // print("Control text did change, but object value data unexpected type: \(type(of: textField.objectValue))")
                 return
             }
+            
             let mapped = anyArray
                 .compactMap { $0 as? TokenWrapper }
                 .map(\.token)
-            parent._tokens.wrappedValue = mapped
+            
+            parent._tokens.wrappedValue = mapped // TODO: async on main?
         }
         
         // not used

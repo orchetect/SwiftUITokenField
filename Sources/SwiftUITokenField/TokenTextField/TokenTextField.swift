@@ -80,6 +80,7 @@ public struct TokenTextField<Token>: View, NSViewRepresentable where Token: Hash
             _ tokenField: NSTokenField,
             displayStringForRepresentedObject representedObject: Any
         ) -> String? {
+            // TODO: allow a different display string than the token's raw identifier string
             switch representedObject {
             case let wrappedToken as TokenWrapper: parent.decode(wrappedToken.token)
             case let string as String: string

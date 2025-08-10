@@ -125,7 +125,7 @@ extension ContentView {
 
 extension TokenizedString<Token> {
     /// Sample data for the demo.
-    static let preset = Self(sequence: [
+    static let preset = Self([
         .string("Something is "),
         .token(.foobar),
         .string(" at "),

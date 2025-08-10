@@ -23,7 +23,7 @@ extension TokenizedString<Token>: @retroactive Codable {
         while let element = try container.decodeIfPresent(Element.self) {
             sequence.append(element)
         }
-        self.init(sequence: sequence)
+        self.init(sequence)
     }
     
     public func encode(to encoder: any Encoder) throws {

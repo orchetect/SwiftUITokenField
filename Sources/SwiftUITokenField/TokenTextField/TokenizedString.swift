@@ -8,7 +8,7 @@
 public struct TokenizedString<Token> {
     public var sequence: [Element]
     
-    public init(sequence: [Element] = []) {
+    public init(_ sequence: [Element] = []) {
         self.sequence = sequence
     }
 }
@@ -91,7 +91,7 @@ extension TokenizedString {
             }
         }
         
-        self.init(sequence: sequence)
+        self.init(sequence)
     }
     
     /// Returns the sequence as a tokenized string.

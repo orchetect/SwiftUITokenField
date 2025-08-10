@@ -4,6 +4,8 @@
 //  © 2025 Steffan Andrews • Licensed under MIT License
 //
 
+#if os(macOS)
+
 import SwiftUI
 import SwiftUITokenField
 import Testing
@@ -166,3 +168,5 @@ import Testing
         )
     }
 }
+
+#endif

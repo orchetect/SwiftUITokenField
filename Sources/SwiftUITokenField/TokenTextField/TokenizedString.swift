@@ -4,6 +4,8 @@
 //  © 2025 Steffan Andrews • Licensed under MIT License
 //
 
+#if os(macOS)
+
 /// Tokenized string model.
 public struct TokenizedString<Token> {
     public var sequence: [Element]
@@ -58,15 +60,10 @@ extension TokenizedString {
         
         while index < tokenized.endIndex {
             if let tokenStart = tokenized
-                .range(of: tokenPrefix, options: [], range: index ..< tokenized.endIndex, locale: nil)
+                .range(of: tokenPrefix, range: index ..< tokenized.endIndex)
             {
                 guard let tokenEnd = tokenized
-                    .range(
-                        of: tokenSuffix,
-                        options: [],
-                        range: tokenStart.upperBound ..< tokenized.endIndex,
-                        locale: nil
-                    )
+                    .range(of: tokenSuffix, range: tokenStart.upperBound ..< tokenized.endIndex)
                 else {
                     throw DecodingError.dataCorrupted(
                         DecodingError.Context(
@@ -181,3 +178,5 @@ extension TokenizedString where Element: Equatable {
         sequence.contains(where: { $0 == .string(string) })
     }
 }
+
+#endif

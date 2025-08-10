@@ -43,7 +43,6 @@ public struct TokenField<Token>: View, NSViewRepresentable where Token: Hashable
         
         // set up initial data
         tokenField.objectValue = tokens.map { TokenWrapper(token: $0) }
-        context.coordinator.tokens = _tokens
         
         return tokenField
     }
@@ -72,8 +71,6 @@ public struct TokenField<Token>: View, NSViewRepresentable where Token: Hashable
     }
     
     public final class Coordinator: NSObject, NSTokenFieldDelegate, ObservableObject {
-        var tokens: Binding<[Token]>?
-        
         var parent: TokenField<Token>
         
         init(_ parent: TokenField<Token>) {
@@ -108,8 +105,6 @@ public struct TokenField<Token>: View, NSViewRepresentable where Token: Hashable
             shouldAdd tokens: [Any],
             at index: Int
         ) -> [Any] {
-            // TODO: add Bool option to prevent token duplication
-            
             var output: [TokenWrapper] = []
             
             // if token type is String, we can allow arbitrary entry of new tokens not defined
@@ -127,7 +122,7 @@ public struct TokenField<Token>: View, NSViewRepresentable where Token: Hashable
                     
                     // reject duplicate token if not allowed
                     if !parent.allowDuplicateTokens,
-                       self.tokens?.wrappedValue.contains(token) == true
+                       parent._tokens.wrappedValue.contains(token) == true
                     {
                         // print("Rejecting duplicate token: \(token)")
                         continue
@@ -172,7 +167,7 @@ public struct TokenField<Token>: View, NSViewRepresentable where Token: Hashable
             let mapped = anyArray
                 .compactMap { $0 as? TokenWrapper }
                 .map(\.token)
-            self.tokens?.wrappedValue = mapped
+            parent._tokens.wrappedValue = mapped
         }
         
         // not used

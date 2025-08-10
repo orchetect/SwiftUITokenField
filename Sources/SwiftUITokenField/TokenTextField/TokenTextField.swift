@@ -41,7 +41,6 @@ public struct TokenTextField<Token>: View, NSViewRepresentable where Token: Hash
         // set up initial data
         tokenField.isEditable = isEditable
         tokenField.objectValue = unwrap(tokens: tokens)
-        context.coordinator.tokens = _tokens
         
         return tokenField
     }
@@ -70,8 +69,6 @@ public struct TokenTextField<Token>: View, NSViewRepresentable where Token: Hash
     }
     
     public final class Coordinator: NSObject, NSTokenFieldDelegate, ObservableObject {
-        var tokens: Binding<TokenizedString<Token>>?
-        
         var parent: TokenTextField<Token>
         
         init(_ parent: TokenTextField<Token>) {
@@ -118,7 +115,7 @@ public struct TokenTextField<Token>: View, NSViewRepresentable where Token: Hash
             func add(token: Token) {
                 // reject duplicate token if not allowed
                 if !parent.allowDuplicateTokens,
-                   self.tokens?.wrappedValue.contains(token) == true
+                   parent._tokens.wrappedValue.contains(token) == true
                 {
                     // print("Rejecting duplicate token: \(token)")
                     return
@@ -134,7 +131,7 @@ public struct TokenTextField<Token>: View, NSViewRepresentable where Token: Hash
                     // try converting to token first
                     if let cast = parent.encode(string) {
                         // print("Converted string to token: \(String(describing: cast))")
-                        output.append(cast)
+                        add(token: cast)
                     } else {
                         // print("Cast as string: \(String(describing: string))")
                         output.append(string)
@@ -181,7 +178,7 @@ public struct TokenTextField<Token>: View, NSViewRepresentable where Token: Hash
                 // print("Control text did change, but encountered unexpected type: \(type(of: textField.objectValue))")
                 return
             }
-            self.tokens?.wrappedValue.sequence = mapped
+            parent._tokens.wrappedValue.sequence = mapped
         }
         
         // not used

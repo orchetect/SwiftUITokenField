@@ -9,7 +9,7 @@ import SwiftUITokenField
 
 struct ContentView: View {
     @State private var isEditable: Bool = true
-    @State private var isDuplicateTokensAllowed: Bool = true
+    @State private var isDuplicateTokensAllowed: Bool = false
     @State private var tokens: [Token] = .preset // []
     
     var body: some View {

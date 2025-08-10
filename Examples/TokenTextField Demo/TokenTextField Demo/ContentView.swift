@@ -12,9 +12,6 @@ struct ContentView: View {
     @State private var isDuplicateTokensAllowed: Bool = true
     @State private var tokenizedString: TokenizedString<Token> = .preset // .init()
     
-    @State private var previewID: UUID = UUID()
-    @State private var updateTimer: Task<Void, any Error>?
-    
     var body: some View {
         Form {
             Section("Token TextField") {
@@ -26,8 +23,7 @@ struct ContentView: View {
                     )
                     .id(isDuplicateTokensAllowed) // force refresh when option is toggled
                     
-                    Text(previewString)
-                        .id(previewID) // force refresh on a timer for date/time token updates
+                    TokenSubstitutionPreviewView(tokenizedString: $tokenizedString)
                 }
                 
                 LabeledContent("Append Token from Menu") {
@@ -75,28 +71,6 @@ struct ContentView: View {
         }
         .formStyle(.grouped)
         .padding()
-        .onAppear { startTimer() }
-        .onDisappear { stopTimer() }
-    }
-    
-    private var previewString: String {
-        tokenizedString.string { token in token.outputString }
-    }
-    
-    private func startTimer() {
-        updateTimer?.cancel()
-        // since we're using date and time tokens, this timer is only needed to update UI as time passes
-        updateTimer = Task {
-            while !Task.isCancelled {
-                previewID = UUID()
-                try await Task.sleep(for: .seconds(1))
-            }
-        }
-    }
-    
-    private func stopTimer() {
-        updateTimer?.cancel()
-        updateTimer = nil
     }
 }
 
@@ -160,4 +134,40 @@ extension TokenizedString<Token> {
         .token(.date),
         .string(".")
     ])
+}
+
+// MARK: - Auto-Updating String Preview
+
+struct TokenSubstitutionPreviewView: View {
+    @Binding var tokenizedString: TokenizedString<Token>
+    
+    @State private var previewID: UUID = UUID()
+    @State private var updateTimer: Task<Void, any Error>?
+    
+    var body: some View {
+        Text(previewString)
+            .id(previewID)
+            .onAppear { startTimer() }
+            .onDisappear { stopTimer() }
+    }
+    
+    private var previewString: String {
+        tokenizedString.string { token in token.outputString }
+    }
+    
+    private func startTimer() {
+        updateTimer?.cancel()
+        // since we're using date and time tokens, this timer is only needed to update UI in real-time
+        updateTimer = Task {
+            while !Task.isCancelled {
+                previewID = UUID()
+                try await Task.sleep(for: .seconds(1))
+            }
+        }
+    }
+    
+    private func stopTimer() {
+        updateTimer?.cancel()
+        updateTimer = nil
+    }
 }

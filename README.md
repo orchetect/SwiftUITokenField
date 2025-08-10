@@ -4,21 +4,38 @@
 
 Richly-featured SwiftUI wrapper for `NSTokenField` on macOS.
 
-## TokenTextField
+## Token Field
 
-The `TokenTextField` view allows mixed entry of tokens and plain text.
+The `TokenField` view allows entry of tokens only.
 
-This field allows the user to define a token substitution string template.
+The user may be allowed to define custom tokens, or tokens may be restricted to a pre-defined set.
 
-![Screenshot](Images/tokentextfield -screenshot.png)
+![Screenshot](Images/tokenfield-screenshot.png)
 
-- Methods for encoding/decoding tokenized strings
 - Supports text entry auto-complete for tokens
+- Token substitutions may be shown in place of their raw token identifier if desired
 - Tokens may also be added programmatically from a menu, or using drag & drop from a list of tokens in the UI
+- Token entry be restricted to only unique tokens, disallowing duplicate tokens
+- Editing can be disabled to allow the view to act as a read-only label
 
-### Sample Usage
+## Token TextField
 
-`TokenTextField` works best when you define a token enum that is `String` `RawRepresentable` and conforms to `CaseIterable`. This allows it to automatically synthesize token encoding and decoding, as well as synthesize text auto-complete entries.
+The `TokenTextField` view allows mixed entry of tokens and plain text. It uses `TokenizedString` as its data binding type, allowing strong-typing of the senquence.
+
+This field allows the user to define a token-substitution string template.
+
+![Screenshot](Images/tokentextfield-screenshot.png)
+
+- Supports text entry auto-complete for tokens
+- Token substitutions may be shown in place of their raw token identifier if desired
+- Tokens may also be added programmatically from a menu, or using drag & drop from a list of tokens in the UI
+- Token entry be restricted to only unique tokens, disallowing duplicate tokens
+- Editing can be disabled to allow the view to act as a read-only label
+- Methods for encoding/decoding tokenized strings
+
+## Sample Usage
+
+The fields work best when you define a token enum that is `String` `RawRepresentable` and conforms to `CaseIterable`. This allows the field to automatically synthesize token encoding/decoding and text auto-complete entries.
 
 ```swift
 import SwiftUI
@@ -42,7 +59,7 @@ struct ContentView: View {
 Token substitution:
 
 ```swift
-let tokenizedString = TokenizedString<MyToken>(sequence: [
+let tokenizedString = TokenizedString<MyToken>([
     .string("The date is "),
     .token(.date),
     .string(", and the time is "),
@@ -53,7 +70,7 @@ let tokenizedString = TokenizedString<MyToken>(sequence: [
 let substitutedString = tokenizedString.string { token in
     switch token {
         case .name: "John Doe"
-        case .date: Date().formatted(date: .complete, time: .omitted)
+        case .date: Date().formatted(date: .abbreviated, time: .omitted)
         case .time: Date().formatted(date: .omitted, time: .standard)
     }  
 }
@@ -62,6 +79,8 @@ print(substitutedString)
 ```
 
 Tokenized string serialization:
+
+By default `%[` and `]` token prefix/suffix is used, but custom ones can be supplied to the method.
 
 ```swift
 let encoded = tokenizedString.tokenizedString()
@@ -73,7 +92,7 @@ let decoded = try TokenizedString<MyToken>(from: "The date is %[date], and the t
 
 ### Advanced Usage
 
-The `TokenTextField` view supports `NSTokenField` auto-completion.
+The fields support `NSTokenField` text entry auto-completion.
 
 For token types that:
 

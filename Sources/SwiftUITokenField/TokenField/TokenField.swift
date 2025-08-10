@@ -41,9 +41,6 @@ public struct TokenField<Token>: View, NSViewRepresentable where Token: Hashable
         cell?.setCellAttribute(.cellIsBordered, to: 0)
         cell?.tokenStyle = tokenField.tokenStyle
         
-        // set up initial data
-        tokenField.objectValue = tokens.map { TokenWrapper(token: $0) }
-        
         return tokenField
     }
     
@@ -54,8 +51,10 @@ public struct TokenField<Token>: View, NSViewRepresentable where Token: Hashable
             nsView.frame = bounds
         }
         
+        // data
         nsView.objectValue = tokens.map { TokenWrapper(token: $0) }
         
+        // editable
         let wasEditable = nsView.isEditable
         nsView.isEditable = isEditable
         if wasEditable, !isEditable {

@@ -192,25 +192,25 @@ public struct TokenField<Token>: View, NSViewRepresentable where Token: Hashable
         }
         
         func removeDuplicateTokens() {
-            DispatchQueue.main.async {
-                let tokens = self.parent._tokens.wrappedValue.removingDuplicates()
+            DispatchQueue.main.async { [parent] in
+                let tokens = parent._tokens.wrappedValue.removingDuplicates()
                 
-                if self.parent._tokens.wrappedValue != tokens {
-                    self.parent._tokens.wrappedValue = tokens
+                if parent._tokens.wrappedValue != tokens {
+                    parent._tokens.wrappedValue = tokens
                 }
             }
         }
         
         func removeNewTokens() {
-            DispatchQueue.main.async {
-                var tokens = self.parent._tokens.wrappedValue
+            DispatchQueue.main.async { [parent] in
+                var tokens = parent._tokens.wrappedValue
                 
                 tokens.removeAll {
-                    !self.parent.completions.keys.contains($0)
+                    !parent.completions.keys.contains($0)
                 }
                 
-                if self.parent._tokens.wrappedValue != tokens {
-                    self.parent._tokens.wrappedValue = tokens
+                if parent._tokens.wrappedValue != tokens {
+                    parent._tokens.wrappedValue = tokens
                 }
             }
         }

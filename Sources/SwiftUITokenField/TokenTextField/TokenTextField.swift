@@ -219,11 +219,11 @@ public struct TokenTextField<Token>: View, NSViewRepresentable where Token: Hash
         }
         
         func removeDuplicateTokens() {
-            DispatchQueue.main.async {
-                let tokens = self.parent._tokens.wrappedValue.sequence.removingDuplicates()
+            DispatchQueue.main.async { [parent] in
+                let tokens = parent._tokens.wrappedValue.sequence.removingDuplicates()
                 
-                if self.parent._tokens.wrappedValue.sequence != tokens {
-                    self.parent._tokens.wrappedValue.sequence = tokens
+                if parent._tokens.wrappedValue.sequence != tokens {
+                    parent._tokens.wrappedValue.sequence = tokens
                 }
             }
         }

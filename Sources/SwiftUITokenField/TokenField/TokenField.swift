@@ -64,6 +64,10 @@ public struct TokenField<Token>: View, NSViewRepresentable where Token: Hashable
             // print("Removing focus from token field.")
             nsView.removeFirstResponderIfFocused()
         }
+        
+        if !allowNewStringTokens {
+            DispatchQueue.main.async { context.coordinator.removeNewTokens() }
+        }
     }
     
     // MARK: - Coordinator
@@ -115,7 +119,7 @@ public struct TokenField<Token>: View, NSViewRepresentable where Token: Hashable
             for case let item as String in tokens {
                 if let token = parent.encode(item) {
                     // reject new String token if not allowed
-                    if Token.self is String,
+                    if token is String,
                         !parent.allowNewStringTokens,
                         !parent.completions.keys.contains(token)
                     {
@@ -184,6 +188,18 @@ public struct TokenField<Token>: View, NSViewRepresentable where Token: Hashable
         
         func removeDuplicateTokens() {
             let tokens = parent._tokens.wrappedValue.removingDuplicates()
+            
+            if parent._tokens.wrappedValue != tokens {
+                parent._tokens.wrappedValue = tokens
+            }
+        }
+        
+        func removeNewTokens() {
+            var tokens = parent._tokens.wrappedValue
+            
+            tokens.removeAll {
+                !parent.completions.keys.contains($0)
+            }
             
             if parent._tokens.wrappedValue != tokens {
                 parent._tokens.wrappedValue = tokens

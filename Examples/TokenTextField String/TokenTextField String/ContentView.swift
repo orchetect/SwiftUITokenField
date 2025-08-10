@@ -18,6 +18,7 @@ struct ContentView: View {
                 VStack(alignment: .leading, spacing: 10) {
                     TokenTextField(
                         $tokenizedString,
+                        completions: FactoryTokens.allTokens(),
                         allowDuplicateTokens: isDuplicateTokensAllowed,
                         isEditable: isEditable
                     )

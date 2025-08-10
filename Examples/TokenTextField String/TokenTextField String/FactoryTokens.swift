@@ -6,6 +6,7 @@
 
 import Foundation
 import SwiftUI
+import SwiftUITokenField
 
 public enum FactoryTokens {
     public static let foobar = "foobar"
@@ -13,7 +14,7 @@ public enum FactoryTokens {
     public static let time = "time"
     
     public static func allTokens() -> [String] {
-        [Self.foobar, Self.date, Self.time]
+        [foobar, date, time]
     }
 }
 

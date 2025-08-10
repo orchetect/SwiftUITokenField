@@ -17,6 +17,7 @@ public struct TokenTextField<Token>: View, NSViewRepresentable where Token: Hash
     private var decode: (Token) -> String
     private var encode: (String) -> Token?
     private var completions: [Token: String]
+    private var allowDuplicateTokens: Bool
     
     // MARK: - View Creation
     
@@ -112,9 +113,18 @@ public struct TokenTextField<Token>: View, NSViewRepresentable where Token: Hash
             shouldAdd tokens: [Any],
             at index: Int
         ) -> [Any] {
-            // TODO: add Bool option to prevent token duplication
-            
             var output: [Any] = [] // TODO: may need to refactor using TokenWrapper from TokenField to avoid typing issues when `Token` is `String`
+            
+            func add(token: Token) {
+                // reject duplicate token if not allowed
+                if !parent.allowDuplicateTokens,
+                   self.tokens?.wrappedValue.contains(token) == true
+                {
+                    // print("Rejecting duplicate token: \(token)")
+                    return
+                }
+                output.append(token)
+            }
             
             for token in tokens {
                 if let cast = token as? Token {
@@ -216,12 +226,14 @@ extension TokenTextField {
     public init(
         _ tokens: Binding<TokenizedString<Token>>,
         completions: [Token: String] = [:],
+        allowDuplicateTokens: Bool = true,
         isEditable: Bool = true,
         decode: @escaping (_ token: Token) -> String,
         encode: @escaping (_ string: String) -> Token?
     ) {
         _tokens = tokens
         self.completions = completions
+        self.allowDuplicateTokens = allowDuplicateTokens
         self.isEditable = isEditable
         self.decode = decode
         self.encode = encode
@@ -233,10 +245,12 @@ extension TokenTextField where Token: RawRepresentable, Token.RawValue == String
     public init(
         _ tokens: Binding<TokenizedString<Token>>,
         completions: [Token: String] = [:],
+        allowDuplicateTokens: Bool = true,
         isEditable: Bool = true
     ) {
         _tokens = tokens
         self.completions = completions
+        self.allowDuplicateTokens = allowDuplicateTokens
         self.isEditable = isEditable
         decode = { $0.rawValue }
         encode = { Token(rawValue: $0) }
@@ -248,44 +262,16 @@ extension TokenTextField where Token: RawRepresentable, Token.RawValue == String
     /// based on its raw value and auto-populating completions.
     public init(
         _ tokens: Binding<TokenizedString<Token>>,
+        allowDuplicateTokens: Bool = true,
         isEditable: Bool = true
     ) {
         _tokens = tokens
         completions = Token.allCases.mapToDictionaryKeys(withValues: { $0.rawValue })
+        self.allowDuplicateTokens = allowDuplicateTokens
         self.isEditable = isEditable
         decode = { $0.rawValue }
         encode = { Token(rawValue: $0) }
     }
 }
-
-// TODO: works, but is not useful or relevant since our token field is treated as a text field, so this would result in tokenizing all strings as tokens which is meaningless.
-// extension TokenTextField where Token == String {
-//     public init(
-//         _ tokens: Binding<[Token]>,
-//         completions: [String] = [],
-//         isEditable: Bool = true
-//     ) {
-//         _tokens = tokens
-//         self.completions = completions.mapToDictionaryKeys(withValues: { $0 })
-//         self.isEditable = isEditable
-//         decode = { $0 }
-//         encode = { $0 }
-//     }
-// }
-
-// TODO: works, but is not useful or relevant since our token field is treated as a text field, so this would result in tokenizing all strings as tokens which is meaningless.
-// extension TokenTextField where Token: StringProtocol {
-//      public init(
-//         _ tokens: Binding<TokenizedString<Token>>,
-//         completions: [Token: String] = [:],
-//         isEditable: Bool = true
-//      ) {
-//          _tokens = tokens
-//          self.completions = completions
-//         self.isEditable = isEditable
-//          decode = { String($0) }
-//          encode = { Token($0) }
-//      }
-// }
 
 #endif

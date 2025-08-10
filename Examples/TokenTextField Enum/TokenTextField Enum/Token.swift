@@ -18,12 +18,12 @@ extension Token: Identifiable {
 }
 
 extension Token {
-    public var outputString: String {
+    public var substitutionString: String {
         switch self {
         case .foobar:
             "all messed up"
         case .date:
-            Date().formatted(date: .complete, time: .omitted)
+            Date().formatted(date: .abbreviated, time: .omitted)
         case .time:
             Date().formatted(date: .omitted, time: .standard)
         }

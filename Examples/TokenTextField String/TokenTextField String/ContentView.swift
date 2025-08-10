@@ -10,6 +10,7 @@ import SwiftUITokenField
 struct ContentView: View {
     @State private var isEditable: Bool = true
     @State private var isDuplicateTokensAllowed: Bool = true
+    @State private var isTokenSubstitutedInline: Bool = false
     @State private var tokenizedString: TokenizedString<String> = .preset // .init()
     
     var body: some View {
@@ -20,9 +21,10 @@ struct ContentView: View {
                         $tokenizedString,
                         completions: FactoryTokens.allTokens(),
                         allowDuplicateTokens: isDuplicateTokensAllowed,
-                        isEditable: isEditable
+                        isEditable: isEditable,
+                        decode: { isTokenSubstitutedInline ? FactoryTokens.substitution(for: $0) : $0 }
                     )
-                    .id(isDuplicateTokensAllowed) // force refresh when option is toggled
+                    .id([isDuplicateTokensAllowed, isTokenSubstitutedInline]) // force refresh when option is toggled
                     
                     TokenSubstitutionPreviewView(tokenizedString: $tokenizedString)
                 }
@@ -30,7 +32,7 @@ struct ContentView: View {
                 LabeledContent("Append Token from Menu") {
                     Menu {
                         ForEach(FactoryTokens.allTokens(), id: \.self) { token in
-                            Button(token) {
+                            Button("\(token) - \(FactoryTokens.substitution(for: token))") {
                                 tokenizedString.sequence.append(.token(token))
                             }
                         }
@@ -57,6 +59,8 @@ struct ContentView: View {
                 Toggle("Editable", isOn: $isEditable)
                 
                 Toggle("Allow Duplicate Tokens", isOn: $isDuplicateTokensAllowed)
+                
+                Toggle("Inline Token Substitutions", isOn: $isTokenSubstitutedInline)
             }
             
             Section("UserDefaults") {
@@ -153,7 +157,7 @@ struct TokenSubstitutionPreviewView: View {
     }
     
     private var previewString: String {
-        tokenizedString.string { token in token.tokenSubstitution }
+        tokenizedString.string { token in FactoryTokens.substitution(for: token) }
     }
     
     private func startTimer() {

@@ -10,6 +10,7 @@ import SwiftUITokenField
 struct ContentView: View {
     @State private var isEditable: Bool = true
     @State private var isDuplicateTokensAllowed: Bool = false
+    @State private var isTokenSubstitutedInline: Bool = false
     @State private var tokens: [Token] = .preset // []
     
     var body: some View {
@@ -19,9 +20,10 @@ struct ContentView: View {
                     TokenField(
                         $tokens,
                         allowDuplicateTokens: isDuplicateTokensAllowed,
-                        isEditable: $isEditable
+                        isEditable: $isEditable,
+                        decode: { isTokenSubstitutedInline ? $0.substitutionString : $0.rawValue }
                     )
-                    .id(isDuplicateTokensAllowed) // force refresh when option is toggled
+                    .id([isDuplicateTokensAllowed, isTokenSubstitutedInline]) // force refresh when options are toggled
                     
                     Text(tokens.map(\.rawValue).joined(separator: ", "))
                 }
@@ -29,7 +31,7 @@ struct ContentView: View {
                 LabeledContent("Append Token from Menu") {
                     Menu {
                         ForEach(Token.allCases) { token in
-                            Button("\(token.rawValue) - \(token.outputString)") {
+                            Button("\(token.rawValue) - \(token.substitutionString)") {
                                 tokens.append(token)
                             }
                         }
@@ -56,6 +58,8 @@ struct ContentView: View {
                 Toggle("Editable", isOn: $isEditable)
                 
                 Toggle("Allow Duplicate Tokens", isOn: $isDuplicateTokensAllowed)
+                
+                Toggle("Inline Token Substitutions", isOn: $isTokenSubstitutedInline)
             }
         }
         .formStyle(.grouped)

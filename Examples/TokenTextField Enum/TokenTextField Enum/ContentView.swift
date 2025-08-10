@@ -10,6 +10,7 @@ import SwiftUITokenField
 struct ContentView: View {
     @State private var isEditable: Bool = true
     @State private var isDuplicateTokensAllowed: Bool = true
+    @State private var isTokenSubstitutedInline: Bool = false
     @State private var tokenizedString: TokenizedString<Token> = .preset // .init()
     
     var body: some View {
@@ -19,9 +20,10 @@ struct ContentView: View {
                     TokenTextField(
                         $tokenizedString,
                         allowDuplicateTokens: isDuplicateTokensAllowed,
-                        isEditable: isEditable
+                        isEditable: isEditable,
+                        decode: { isTokenSubstitutedInline ? $0.substitutionString : $0.rawValue }
                     )
-                    .id(isDuplicateTokensAllowed) // force refresh when option is toggled
+                    .id([isDuplicateTokensAllowed, isTokenSubstitutedInline]) // force refresh when option is toggled
                     
                     TokenSubstitutionPreviewView(tokenizedString: $tokenizedString)
                 }
@@ -29,7 +31,7 @@ struct ContentView: View {
                 LabeledContent("Append Token from Menu") {
                     Menu {
                         ForEach(Token.allCases) { token in
-                            Button("\(token.rawValue) - \(token.outputString)") {
+                            Button("\(token.rawValue) - \(token.substitutionString)") {
                                 tokenizedString.sequence.append(.token(token))
                             }
                         }
@@ -56,6 +58,8 @@ struct ContentView: View {
                 Toggle("Editable", isOn: $isEditable)
                 
                 Toggle("Allow Duplicate Tokens", isOn: $isDuplicateTokensAllowed)
+                
+                Toggle("Inline Token Substitutions", isOn: $isTokenSubstitutedInline)
             }
             
             Section("UserDefaults") {
@@ -152,7 +156,7 @@ struct TokenSubstitutionPreviewView: View {
     }
     
     private var previewString: String {
-        tokenizedString.string { token in token.outputString }
+        tokenizedString.string { token in token.substitutionString }
     }
     
     private func startTimer() {

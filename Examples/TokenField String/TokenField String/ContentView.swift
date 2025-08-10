@@ -11,6 +11,7 @@ struct ContentView: View {
     @State private var isEditable: Bool = true
     @State private var isDuplicateTokensAllowed: Bool = false
     @State private var isNewTokensAllowed: Bool = true
+    @State private var isTokenSubstitutedInline: Bool = false
     @State private var tokens: [String] = .presetTokens // []
     
     var body: some View {
@@ -19,19 +20,20 @@ struct ContentView: View {
                 VStack(alignment: .leading, spacing: 10) {
                     TokenField(
                         $tokens,
-                        completions: .factoryTokens,
+                        completions: FactoryTokens.allTokens(),
                         allowNewTokens: isNewTokensAllowed,
                         allowDuplicateTokens: isDuplicateTokensAllowed,
-                        isEditable: $isEditable
+                        isEditable: $isEditable,
+                        decode: { isTokenSubstitutedInline ? FactoryTokens.substitution(for: $0) : $0 }
                     )
-                    .id([isDuplicateTokensAllowed, isNewTokensAllowed]) // force refresh when option is toggled
+                    .id([isDuplicateTokensAllowed, isNewTokensAllowed, isTokenSubstitutedInline]) // force refresh when option is toggled
                     
                     Text(tokens.joined(separator: ", "))
                 }
                 
                 LabeledContent("Append Token from Menu") {
                     Menu {
-                        ForEach([String].factoryTokens, id: \.self) { token in
+                        ForEach(FactoryTokens.allTokens(), id: \.self) { token in
                             Button(token) {
                                 tokens.append(token)
                             }
@@ -45,7 +47,7 @@ struct ContentView: View {
                 
                 LabeledContent("Insert Token by Dragging") {
                     HStack {
-                        ForEach([String].factoryTokens, id: \.self) { token in
+                        ForEach(FactoryTokens.allTokens(), id: \.self) { token in
                             Text(token)
                                 .textSelection(.disabled)
                                 .padding([.leading, .trailing], 5)
@@ -61,6 +63,8 @@ struct ContentView: View {
                 Toggle("Allow Duplicate Tokens", isOn: $isDuplicateTokensAllowed)
                 
                 Toggle("Allow New Token Creation", isOn: $isNewTokensAllowed)
+                
+                Toggle("Inline Token Substitutions", isOn: $isTokenSubstitutedInline)
             }
         }
         .formStyle(.grouped)
@@ -71,9 +75,6 @@ struct ContentView: View {
 // MARK: - Mock Data
 
 extension [String] {
-    /// Factory tokens the app provides.
-    static let factoryTokens: Self = ["foobar", "date", "time"]
-    
     /// Sample data for the demo.
     static let presetTokens: Self = ["foobar"]
 }

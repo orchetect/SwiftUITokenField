@@ -16,9 +16,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "E2EA63022E4555C2004B3B57"
-               BuildableName = "TokenTextField Demo.app"
-               BlueprintName = "TokenTextField Demo"
-               ReferencedContainer = "container:TokenTextField Demo.xcodeproj">
+               BuildableName = "TokenTextField Enum.app"
+               BlueprintName = "TokenTextField Enum"
+               ReferencedContainer = "container:TokenTextField Enum.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -45,9 +45,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "E2EA63022E4555C2004B3B57"
-            BuildableName = "TokenTextField Demo.app"
-            BlueprintName = "TokenTextField Demo"
-            ReferencedContainer = "container:TokenTextField Demo.xcodeproj">
+            BuildableName = "TokenTextField Enum.app"
+            BlueprintName = "TokenTextField Enum"
+            ReferencedContainer = "container:TokenTextField Enum.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </LaunchAction>
@@ -62,9 +62,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "E2EA63022E4555C2004B3B57"
-            BuildableName = "TokenTextField Demo.app"
-            BlueprintName = "TokenTextField Demo"
-            ReferencedContainer = "container:TokenTextField Demo.xcodeproj">
+            BuildableName = "TokenTextField Enum.app"
+            BlueprintName = "TokenTextField Enum"
+            ReferencedContainer = "container:TokenTextField Enum.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>

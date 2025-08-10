@@ -25,6 +25,15 @@ extension TokenizedString.Element: Identifiable where Token: Hashable {
 
 // MARK: - Conveniences
 
+extension TokenizedString.Element where Token == String {
+    public var rawValue: Token {
+        switch self {
+        case let .token(token): token
+        case let .string(string): string
+        }
+    }
+}
+
 extension TokenizedString.Element where Token: RawRepresentable, Token.RawValue == String {
     public var rawValue: Token.RawValue {
         switch self {

@@ -251,12 +251,13 @@ extension TokenField where Token == String {
         completions: [String] = [],
         allowNewTokens: Bool = true,
         allowDuplicateTokens: Bool = false,
-        isEditable: Binding<Bool> = .constant(true)
+        isEditable: Binding<Bool> = .constant(true),
+        decode: @escaping (_ token: Token) -> String = { $0 }
     ) {
         _tokens = tokens
         self.completions = completions.mapToDictionaryKeys(withValues: { $0 })
         _isEditable = isEditable
-        decode = { $0 }
+        self.decode = decode
         encode = { $0 }
         allowNewStringTokens = allowNewTokens
         self.allowDuplicateTokens = allowDuplicateTokens
@@ -269,12 +270,13 @@ extension TokenField where Token: RawRepresentable, Token.RawValue == String {
         _ tokens: Binding<[Token]>,
         completions: [Token: String] = [:],
         allowDuplicateTokens: Bool = false,
-        isEditable: Binding<Bool> = .constant(true)
+        isEditable: Binding<Bool> = .constant(true),
+        decode: @escaping (_ token: Token) -> String = { $0.rawValue }
     ) {
         _tokens = tokens
         self.completions = completions
         _isEditable = isEditable
-        decode = { $0.rawValue }
+        self.decode = decode
         encode = { Token(rawValue: $0) }
         allowNewStringTokens = false // unused
         self.allowDuplicateTokens = allowDuplicateTokens
@@ -287,12 +289,13 @@ extension TokenField where Token: RawRepresentable, Token.RawValue == String, To
     public init(
         _ tokens: Binding<[Token]>,
         allowDuplicateTokens: Bool = false,
-        isEditable: Binding<Bool> = .constant(true)
+        isEditable: Binding<Bool> = .constant(true),
+        decode: @escaping (_ token: Token) -> String = { $0.rawValue }
     ) {
         _tokens = tokens
         completions = Token.allCases.mapToDictionaryKeys(withValues: { $0.rawValue })
         _isEditable = isEditable
-        decode = { $0.rawValue }
+        self.decode = decode
         encode = { Token(rawValue: $0) }
         allowNewStringTokens = false // unused
         self.allowDuplicateTokens = allowDuplicateTokens

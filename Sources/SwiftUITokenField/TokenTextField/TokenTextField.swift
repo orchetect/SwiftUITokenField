@@ -273,13 +273,14 @@ extension TokenTextField where Token == String {
         _ tokens: Binding<TokenizedString<Token>>,
         completions: [String] = [],
         allowDuplicateTokens: Bool = true,
-        isEditable: Bool = true
+        isEditable: Bool = true,
+        decode: @escaping (_ token: Token) -> String = { $0 }
     ) {
         _tokens = tokens
         self.completions = completions.mapToDictionaryKeys(withValues: { $0 })
         self.allowDuplicateTokens = allowDuplicateTokens
         self.isEditable = isEditable
-        decode = { $0 }
+        self.decode = decode
         encode = { $0 }
     }
 }
@@ -290,13 +291,14 @@ extension TokenTextField where Token: RawRepresentable, Token.RawValue == String
         _ tokens: Binding<TokenizedString<Token>>,
         completions: [Token: String] = [:],
         allowDuplicateTokens: Bool = true,
-        isEditable: Bool = true
+        isEditable: Bool = true,
+        decode: @escaping (_ token: Token) -> String = { $0.rawValue }
     ) {
         _tokens = tokens
         self.completions = completions
         self.allowDuplicateTokens = allowDuplicateTokens
         self.isEditable = isEditable
-        decode = { $0.rawValue }
+        self.decode = decode
         encode = { Token(rawValue: $0) }
     }
 }
@@ -307,13 +309,14 @@ extension TokenTextField where Token: RawRepresentable, Token.RawValue == String
     public init(
         _ tokens: Binding<TokenizedString<Token>>,
         allowDuplicateTokens: Bool = true,
-        isEditable: Bool = true
+        isEditable: Bool = true,
+        decode: @escaping (_ token: Token) -> String = { $0.rawValue }
     ) {
         _tokens = tokens
         completions = Token.allCases.mapToDictionaryKeys(withValues: { $0.rawValue })
         self.allowDuplicateTokens = allowDuplicateTokens
         self.isEditable = isEditable
-        decode = { $0.rawValue }
+        self.decode = decode
         encode = { Token(rawValue: $0) }
     }
 }

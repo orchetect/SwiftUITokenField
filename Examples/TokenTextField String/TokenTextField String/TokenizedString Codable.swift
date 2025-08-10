@@ -52,7 +52,10 @@ extension TokenizedString<String>.Element: @retroactive Codable {
         guard value.count == 1,
               let (keyString, valueString) = value.first
         else {
-            throw DecodingError.dataCorruptedError(in: container, debugDescription: "Expected exactly one dictionary entry.")
+            throw DecodingError.dataCorruptedError(
+                in: container,
+                debugDescription: "Expected exactly one dictionary entry."
+            )
         }
         guard let key = CodingKeys(rawValue: keyString) else {
             throw DecodingError.dataCorruptedError(in: container, debugDescription: "Unrecognized key: \(keyString).")

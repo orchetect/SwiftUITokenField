@@ -135,7 +135,7 @@ public struct TokenTextField<Token>: View, NSViewRepresentable where Token: Hash
                         output.append(string)
                     }
                 
-                // Otherwise, we can differentiate non-String Token easier
+                    // Otherwise, we can differentiate non-String Token easier
                 } else {
                     if let cast = token as? Token {
                         add(token: cast)
@@ -229,7 +229,8 @@ public struct TokenTextField<Token>: View, NSViewRepresentable where Token: Hash
         }
     }
     
-    /// Utility method to unwrap ``TokenizedString/Element``-wrapped objects and return an array to use with `NSTokenField`.
+    /// Utility method to unwrap ``TokenizedString/Element``-wrapped objects and return an array to use with
+    /// `NSTokenField`.
     func unwrap(tokens: TokenizedString<Token>) -> [Any] {
         tokens.sequence.map {
             switch $0 {
@@ -286,7 +287,8 @@ extension TokenTextField where Token == String {
 }
 
 extension TokenTextField where Token: RawRepresentable, Token.RawValue == String {
-    /// Initialize using a token type that is `RawRepresentable` as a `String`, tokenizing string input based on its raw value.
+    /// Initialize using a token type that is `RawRepresentable` as a `String`, tokenizing string input based on its raw
+    /// value.
     public init(
         _ tokens: Binding<TokenizedString<Token>>,
         completions: [Token: String] = [:],

@@ -9,7 +9,8 @@ import SwiftUI
 import Testing
 
 @Suite struct Utilities_Tests {
-    @Test func removingDuplicates() throws {
+    @Test
+    func removingDuplicates() throws {
         #expect(([] as [String]).removingDuplicates() == [])
         #expect((["a"]).removingDuplicates() == ["a"])
         #expect((["a", "b"]).removingDuplicates() == ["a", "b"])

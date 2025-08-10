@@ -25,7 +25,8 @@ import Testing
     
     typealias TS = TokenizedString<TestToken>
     
-    @Test func initDecodeTS() throws {
+    @Test
+    func initDecodeTS() throws {
         #expect(try TS(from: "").sequence == [])
         #expect(try TS(from: " ").sequence == [.string(" ")])
         #expect(try TS(from: "  ").sequence == [.string("  ")])
@@ -78,7 +79,8 @@ import Testing
         #expect(try TS(from: "[one]").sequence == [.string("[one]")])
     }
     
-    @Test func tokenizedStringEncode() throws {
+    @Test
+    func tokenizedStringEncode() throws {
         #expect(TS([]).tokenizedString() == "")
         #expect(TS([.string("")]).tokenizedString() == "")
         #expect(TS([.string(" ")]).tokenizedString() == " ")
@@ -107,7 +109,8 @@ import Testing
         )
     }
     
-    @Test func tokenizedStringStringSubstitution() throws {
+    @Test
+    func tokenizedStringStringSubstitution() throws {
         #expect(TS([]).string(substitution: { "\($0.value)" }) == "")
         #expect(TS([.string("")]).string(substitution: { "\($0.value)" }) == "")
         #expect(TS([.string(" ")]).string(substitution: { "\($0.value)" }) == " ")
@@ -132,11 +135,12 @@ import Testing
                 .string(".")
             ])
             .string(substitution: { "\($0.value)" })
-                == "A very long string with 1, 2 and 3."
+            == "A very long string with 1, 2 and 3."
         )
     }
     
-    @Test func tokenizedStringStringSubstitution_WithSeparator() throws {
+    @Test
+    func tokenizedStringStringSubstitution_WithSeparator() throws {
         #expect(TS([]).string(separator: "-", substitution: { "\($0.value)" }) == "")
         #expect(TS([.string("")]).string(separator: "-", substitution: { "\($0.value)" }) == "")
         #expect(TS([.string(""), .string("")]).string(separator: "-", substitution: { "\($0.value)" }) == "-")
@@ -158,7 +162,7 @@ import Testing
                 .string(".")
             ])
             .string(separator: "-", substitution: { "\($0.value)" })
-                == "A very long string with -1-, -2- and -3-."
+            == "A very long string with -1-, -2- and -3-."
         )
     }
 }

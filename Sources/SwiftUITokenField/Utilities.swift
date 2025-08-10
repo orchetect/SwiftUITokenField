@@ -24,7 +24,7 @@ extension RangeReplaceableCollection where Self: RandomAccessCollection, Element
         while count > 1, index > startIndex {
             let element = self[index]
             if self[startIndex ..< index].contains(element) {
-                self.remove(at: index)
+                remove(at: index)
             }
             index = self.index(before: index)
         }

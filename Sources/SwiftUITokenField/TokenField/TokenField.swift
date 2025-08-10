@@ -121,8 +121,8 @@ public struct TokenField<Token>: View, NSViewRepresentable where Token: Hashable
                 if let token = parent.encode(item) {
                     // reject new String token if not allowed
                     if token is String,
-                        !parent.allowNewStringTokens,
-                        !parent.completions.keys.contains(token)
+                       !parent.allowNewStringTokens,
+                       !parent.completions.keys.contains(token)
                     {
                         continue
                     }
@@ -168,7 +168,7 @@ public struct TokenField<Token>: View, NSViewRepresentable where Token: Hashable
             }
             guard let anyArray = textField.objectValue as? [Any]
             else {
-                // print("Control text did change, but object value data unexpected type: \(type(of: textField.objectValue))")
+                // print("Control text changed, but object is unexpected type: \(type(of: textField.objectValue))")
                 return
             }
             
@@ -266,7 +266,8 @@ extension TokenField where Token == String {
 }
 
 extension TokenField where Token: RawRepresentable, Token.RawValue == String {
-    /// Initialize using a token type that is `RawRepresentable` as a `String`, tokenizing string input based on its raw value.
+    /// Initialize using a token type that is `RawRepresentable` as a `String`, tokenizing string input based on its raw
+    /// value.
     public init(
         _ tokens: Binding<[Token]>,
         completions: [Token: String] = [:],

@@ -61,10 +61,18 @@ extension TokenizedString {
                 .range(of: tokenPrefix, options: [], range: index ..< tokenized.endIndex, locale: nil)
             {
                 guard let tokenEnd = tokenized
-                    .range(of: tokenSuffix, options: [], range: tokenStart.upperBound ..< tokenized.endIndex, locale: nil)
+                    .range(
+                        of: tokenSuffix,
+                        options: [],
+                        range: tokenStart.upperBound ..< tokenized.endIndex,
+                        locale: nil
+                    )
                 else {
                     throw DecodingError.dataCorrupted(
-                        DecodingError.Context(codingPath: [], debugDescription: "Encountered token prefix without a corresponding suffix.")
+                        DecodingError.Context(
+                            codingPath: [],
+                            debugDescription: "Encountered token prefix without a corresponding suffix."
+                        )
                     )
                 }
                 
@@ -129,7 +137,7 @@ extension TokenizedString where Token == String {
         tokenPrefix: String = "%[",
         tokenSuffix: String = "]"
     ) -> String {
-        self.tokenizedString(tokenPrefix: tokenPrefix, tokenSuffix: tokenSuffix, encode: { $0 })
+        tokenizedString(tokenPrefix: tokenPrefix, tokenSuffix: tokenSuffix, encode: { $0 })
     }
 }
 
@@ -141,7 +149,12 @@ extension TokenizedString where Token: RawRepresentable, Token.RawValue == Strin
         tokenPrefix: String = "%[",
         tokenSuffix: String = "]"
     ) throws {
-        try self.init(from: tokenized, tokenPrefix: tokenPrefix, tokenSuffix: tokenSuffix, decode: { Token(rawValue: $0) })
+        try self.init(
+            from: tokenized,
+            tokenPrefix: tokenPrefix,
+            tokenSuffix: tokenSuffix,
+            decode: { Token(rawValue: $0) }
+        )
     }
     
     /// Returns the sequence as a tokenized string.
@@ -150,7 +163,7 @@ extension TokenizedString where Token: RawRepresentable, Token.RawValue == Strin
         tokenPrefix: String = "%[",
         tokenSuffix: String = "]"
     ) -> String {
-        self.tokenizedString(tokenPrefix: tokenPrefix, tokenSuffix: tokenSuffix, encode: { $0.rawValue })
+        tokenizedString(tokenPrefix: tokenPrefix, tokenSuffix: tokenSuffix, encode: { $0.rawValue })
     }
 }
 

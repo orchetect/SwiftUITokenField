@@ -26,7 +26,11 @@ struct ContentView: View {
                         isEditable: $isEditable,
                         decode: { isTokenSubstitutedInline ? FactoryTokens.substitution(for: $0) : $0 }
                     )
-                    .id([isDuplicateTokensAllowed, isNewTokensAllowed, isTokenSubstitutedInline]) // force refresh when option is toggled
+                    .id([
+                        isDuplicateTokensAllowed,
+                        isNewTokensAllowed,
+                        isTokenSubstitutedInline
+                    ]) // force refresh when option is toggled
                     
                     Text(tokens.joined(separator: ", "))
                 }

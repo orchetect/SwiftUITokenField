@@ -246,6 +246,23 @@ extension TokenTextField {
     }
 }
 
+extension TokenTextField where Token == String {
+    /// Initialize with `String` tokens.
+    public init(
+        _ tokens: Binding<TokenizedString<Token>>,
+        completions: [String] = [],
+        allowDuplicateTokens: Bool = true,
+        isEditable: Bool = true
+    ) {
+        _tokens = tokens
+        self.completions = completions.mapToDictionaryKeys(withValues: { $0 })
+        self.allowDuplicateTokens = allowDuplicateTokens
+        self.isEditable = isEditable
+        decode = { $0 }
+        encode = { $0 }
+    }
+}
+
 extension TokenTextField where Token: RawRepresentable, Token.RawValue == String {
     /// Initialize using a token type that is `RawRepresentable` as a `String`, tokenizing string input based on its raw value.
     public init(

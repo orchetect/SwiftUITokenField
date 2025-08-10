@@ -114,6 +114,25 @@ extension TokenizedString {
     }
 }
 
+extension TokenizedString where Token == String {
+    /// Initializes by decoding a tokenized string.
+    public init(
+        from tokenized: String,
+        tokenPrefix: String = "%[",
+        tokenSuffix: String = "]"
+    ) throws {
+        try self.init(from: tokenized, tokenPrefix: tokenPrefix, tokenSuffix: tokenSuffix)
+    }
+    
+    /// Returns the sequence as a tokenized string.
+    public func tokenizedString(
+        tokenPrefix: String = "%[",
+        tokenSuffix: String = "]"
+    ) -> String {
+        self.tokenizedString(tokenPrefix: tokenPrefix, tokenSuffix: tokenSuffix)
+    }
+}
+
 extension TokenizedString where Token: RawRepresentable, Token.RawValue == String {
     /// Initializes by decoding a tokenized string.
     public init(

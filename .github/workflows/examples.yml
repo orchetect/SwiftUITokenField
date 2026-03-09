@@ -1,0 +1,56 @@
+name: build
+permissions:
+  contents: read
+
+on:
+  push:
+    branches: [main, dev]
+    paths-ignore:
+      - 'Docs/**'       # Docs folder in root of repo
+      - '**/*.md'       # .md files anywhere in the repo
+      - '**/LICENSE'    # LICENSE files anywhere in the repo
+      - '**/.gitignore' # .gitignore files anywhere in the repo
+      
+  pull_request:
+    branches: [main]
+    paths-ignore:
+      - 'Docs/**'       # Docs folder in root of repo
+      - '**/*.md'       # .md files anywhere in the repo
+      - '**/LICENSE'    # LICENSE files anywhere in the repo
+      - '**/.gitignore' # .gitignore files anywhere in the repo
+      
+  workflow_dispatch:
+    
+  schedule:
+    - cron: '22 06 * * *'   # once a day @ 6:22am UTC
+
+jobs:
+  examples:
+    name: Build Examples
+    runs-on: macos-latest
+    timeout-minutes: 20
+    steps:
+    - uses: actions/checkout@main
+    - uses: maxim-lobanov/setup-xcode@v1
+      with:
+        xcode-version: latest-stable
+    
+    - name: TokenField Enum - Resolve Package Dependencies # needed because sometimes xcodebuild fails otherwise
+      run: xcodebuild -project "Examples/TokenField Enum/TokenField Enum.xcodeproj" -resolvePackageDependencies | xcbeautify --renderer github-actions && exit ${PIPESTATUS[0]}
+    - name: TokenField Enum - Build
+      run: xcodebuild build -project "Examples/TokenField Enum/TokenField Enum.xcodeproj" -scheme "TokenField Enum" -destination "generic/platform=macOS" | xcbeautify --renderer github-actions && exit ${PIPESTATUS[0]}
+    
+    - name: TokenField String - Resolve Package Dependencies # needed because sometimes xcodebuild fails otherwise
+      run: xcodebuild -project "Examples/TokenField String/TokenField String.xcodeproj" -resolvePackageDependencies | xcbeautify --renderer github-actions && exit ${PIPESTATUS[0]}
+    - name: TokenField String - Build
+      run: xcodebuild build -project "Examples/TokenField String/TokenField String.xcodeproj" -scheme "TokenField String" -destination "generic/platform=macOS" | xcbeautify --renderer github-actions && exit ${PIPESTATUS[0]}
+    
+    - name: TokenTextField Enum - Resolve Package Dependencies # needed because sometimes xcodebuild fails otherwise
+      run: xcodebuild -project "Examples/TokenTextField Enum/TokenTextField Enum.xcodeproj" -resolvePackageDependencies | xcbeautify --renderer github-actions && exit ${PIPESTATUS[0]}
+    - name: TokenTextField Enum - Build
+      run: xcodebuild build -project "Examples/TokenTextField Enum/TokenTextField Enum.xcodeproj" -scheme "TokenTextField Enum" -destination "generic/platform=macOS" | xcbeautify --renderer github-actions && exit ${PIPESTATUS[0]}
+    
+    - name: TokenTextField String - Resolve Package Dependencies # needed because sometimes xcodebuild fails otherwise
+      run: xcodebuild -project "Examples/TokenTextField String/TokenTextField String.xcodeproj" -resolvePackageDependencies | xcbeautify --renderer github-actions && exit ${PIPESTATUS[0]}
+    - name: TokenTextField String - Build
+      run: xcodebuild build -project "Examples/TokenTextField String/TokenTextField String.xcodeproj" -scheme "TokenTextField String" -destination "generic/platform=macOS" | xcbeautify --renderer github-actions && exit ${PIPESTATUS[0]}

@@ -1,4 +1,4 @@
-# SwiftUITokenField
+# SwiftUI TokenField
 
 [![Platforms - macOS](https://img.shields.io/badge/platforms-macOS-blue.svg?style=flat)](https://developer.apple.com/swift) ![Swift 6.0](https://img.shields.io/badge/Swift-6.0-blue.svg?style=flat) [![Xcode 16](https://img.shields.io/badge/Xcode-16-blue.svg?style=flat)](https://developer.apple.com/swift) [![License: MIT](http://img.shields.io/badge/license-MIT-lightgrey.svg?style=flat)](https://github.com/orchetect/SwiftUITokenField/blob/main/LICENSE)
 
@@ -108,10 +108,12 @@ enum MyToken: String, CaseIterable {
     case time
 }
 
-@State private var tokenizedString = TokenizedString<MyToken>()
-
-var body: some View {
-    TokenTextField($tokenizedString)
+struct ContentView: View {
+    @State private var tokenizedString = TokenizedString<MyToken>()
+    
+    var body: some View {
+        TokenTextField($tokenizedString)
+    }
 }
 ```
 
@@ -127,15 +129,17 @@ enum MyToken {
     var rawValue: String { /* ... */  }
 }
 
-@State private var tokenizedString = TokenizedString<MyToken>()
-
-var body: some View {
-    TokenTextField(
-        $tokenizedString,
-        completions: [.name: "name", .date: "date", .time: "time"],
-        decode: { token in token.rawValue },
-        encode: { string in Token(rawValue: string) }
-    )
+struct ContentView: View {
+    @State private var tokenizedString = TokenizedString<MyToken>()
+    
+    var body: some View {
+        TokenTextField(
+            $tokenizedString,
+            completions: [.name: "name", .date: "date", .time: "time"],
+            decode: { token in token.rawValue },
+            encode: { string in Token(rawValue: string) }
+        )
+    }
 }
 ```
 
@@ -173,3 +177,9 @@ Please do not email maintainers for technical support. Several options are avail
 ## Contributions
 
 Contributions are welcome. Posting in [Discussions](https://github.com/orchetect/SwiftUITokenField/discussions) first prior to new submitting PRs for features or modifications is encouraged.
+
+## Code Quality & AI Contribution Policy
+
+In an effort to maintain a consistent level of code quality and safety, this repository was built by hand and is maintained without the use of AI code generation.
+
+AI-assisted contributions are welcome, but must remain modest in scope, maintain the same degree of quality and care, and be thoroughly vetted before acceptance.

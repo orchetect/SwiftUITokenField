@@ -1,7 +1,7 @@
 //
 //  ContentView.swift
 //  SwiftUITokenField • https://github.com/orchetect/SwiftUITokenField
-//  © 2025 Steffan Andrews • Licensed under MIT License
+//  © 2026 Steffan Andrews • Licensed under MIT License
 //
 
 import SwiftUI
@@ -12,7 +12,7 @@ struct ContentView: View {
     @State private var isDuplicateTokensAllowed: Bool = true
     @State private var isTokenSubstitutedInline: Bool = false
     @State private var tokenizedString: TokenizedString<Token> = .preset // .init()
-    
+
     var body: some View {
         Form {
             Section("Token TextField") {
@@ -24,10 +24,10 @@ struct ContentView: View {
                         decode: { isTokenSubstitutedInline ? $0.substitutionString : $0.rawValue }
                     )
                     .id([isDuplicateTokensAllowed, isTokenSubstitutedInline]) // force refresh when option is toggled
-                    
+
                     TokenSubstitutionPreviewView(tokenizedString: $tokenizedString)
                 }
-                
+
                 LabeledContent("Append Token from Menu") {
                     Menu {
                         ForEach(Token.allCases) { token in
@@ -41,7 +41,7 @@ struct ContentView: View {
                     .frame(width: 80)
                     .multilineTextAlignment(.trailing)
                 }
-                
+
                 LabeledContent("Insert Token by Dragging") {
                     HStack {
                         ForEach(Token.allCases) { token in
@@ -54,14 +54,14 @@ struct ContentView: View {
                         }
                     }
                 }
-                
+
                 Toggle("Editable", isOn: $isEditable)
-                
+
                 Toggle("Allow Duplicate Tokens", isOn: $isDuplicateTokensAllowed)
-                
+
                 Toggle("Inline Token Substitutions", isOn: $isTokenSubstitutedInline)
             }
-            
+
             Section("UserDefaults") {
                 LabeledContent("Tokenized String") {
                     Button("Save") { saveTokenizedString() }
@@ -93,7 +93,7 @@ extension ContentView {
             print(error.localizedDescription)
         }
     }
-    
+
     private func loadCodableJSON() {
         do {
             let decoder = JSONDecoder()
@@ -107,13 +107,13 @@ extension ContentView {
             print(error.localizedDescription)
         }
     }
-    
+
     private func saveTokenizedString() {
         let encoded = tokenizedString.tokenizedString()
         print("Saving tokenized string: \"\(encoded)\"")
         UserDefaults.standard.set(encoded, forKey: "savedTokenizedString")
     }
-    
+
     private func loadTokenizedString() {
         do {
             guard let encoded = UserDefaults.standard.string(forKey: "savedTokenizedString") else { return }
@@ -144,21 +144,21 @@ extension TokenizedString<Token> {
 
 struct TokenSubstitutionPreviewView: View {
     @Binding var tokenizedString: TokenizedString<Token>
-    
-    @State private var previewID: UUID = UUID()
+
+    @State private var previewID: UUID = .init()
     @State private var updateTimer: Task<Void, any Error>?
-    
+
     var body: some View {
         Text(previewString)
             .id(previewID)
             .onAppear { startTimer() }
             .onDisappear { stopTimer() }
     }
-    
+
     private var previewString: String {
         tokenizedString.string { token in token.substitutionString }
     }
-    
+
     private func startTimer() {
         updateTimer?.cancel()
         // since we're using date and time tokens, this timer is only needed to update UI in real-time
@@ -169,7 +169,7 @@ struct TokenSubstitutionPreviewView: View {
             }
         }
     }
-    
+
     private func stopTimer() {
         updateTimer?.cancel()
         updateTimer = nil

@@ -1,7 +1,7 @@
 //
 //  TokenizedString.swift
 //  SwiftUITokenField • https://github.com/orchetect/SwiftUITokenField
-//  © 2025 Steffan Andrews • Licensed under MIT License
+//  © 2026 Steffan Andrews • Licensed under MIT License
 //
 
 #if os(macOS)
@@ -9,7 +9,7 @@
 /// Tokenized string model.
 public struct TokenizedString<Token> {
     public var sequence: [Element]
-    
+
     public init(_ sequence: [Element] = []) {
         self.sequence = sequence
     }
@@ -22,7 +22,9 @@ extension TokenizedString: Hashable where Token: Hashable { }
 extension TokenizedString: Sendable where Token: Sendable { }
 
 extension TokenizedString: Identifiable where Token: Hashable {
-    public var id: Self { self }
+    public var id: Self {
+        self
+    }
 }
 
 extension TokenizedString {
@@ -53,11 +55,11 @@ extension TokenizedString {
     ) throws {
         assert(tokenPrefix != "")
         assert(tokenSuffix != "")
-        
+
         var sequence: [Element] = []
-        
+
         var index = tokenized.startIndex
-        
+
         while index < tokenized.endIndex {
             if let tokenStart = tokenized
                 .range(of: tokenPrefix, range: index ..< tokenized.endIndex)
@@ -72,21 +74,21 @@ extension TokenizedString {
                         )
                     )
                 }
-                
+
                 let tokenString = String(tokenized[tokenStart.upperBound ..< tokenEnd.lowerBound])
-                
+
                 guard let token = decode(tokenString) else {
                     throw DecodingError.dataCorrupted(
                         DecodingError.Context(codingPath: [], debugDescription: "Unrecognized token: \(tokenString).")
                     )
                 }
-                
+
                 // add intermediate string if necessary
                 if tokenStart.lowerBound > index {
                     let string = String(tokenized[index ..< tokenStart.lowerBound])
                     sequence.append(.string(string))
                 }
-                
+
                 sequence.append(.token(token))
                 index = tokenEnd.upperBound
             } else {
@@ -95,10 +97,10 @@ extension TokenizedString {
                 index = tokenized.endIndex
             }
         }
-        
+
         self.init(sequence)
     }
-    
+
     /// Returns the sequence as a tokenized string.
     public func tokenizedString(
         tokenPrefix: String = "%[",
@@ -107,7 +109,7 @@ extension TokenizedString {
     ) -> String {
         assert(tokenPrefix != "")
         assert(tokenSuffix != "")
-        
+
         return sequence
             .map {
                 switch $0 {
@@ -128,7 +130,7 @@ extension TokenizedString where Token == String {
     ) throws {
         try self.init(from: tokenized, tokenPrefix: tokenPrefix, tokenSuffix: tokenSuffix, decode: { $0 })
     }
-    
+
     /// Returns the sequence as a tokenized string.
     public func tokenizedString(
         tokenPrefix: String = "%[",
@@ -153,7 +155,7 @@ extension TokenizedString where Token: RawRepresentable, Token.RawValue == Strin
             decode: { Token(rawValue: $0) }
         )
     }
-    
+
     /// Returns the sequence as a tokenized string.
     @_disfavoredOverload
     public func tokenizedString(
@@ -171,7 +173,7 @@ extension TokenizedString where Element: Equatable {
     public func contains(_ token: Token) -> Bool {
         sequence.contains(where: { $0 == token })
     }
-    
+
     /// Returns true if the sequence contains the given plain-text string.
     @_disfavoredOverload
     public func contains(_ string: String) -> Bool {

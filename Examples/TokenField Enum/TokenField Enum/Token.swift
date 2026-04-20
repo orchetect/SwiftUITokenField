@@ -1,7 +1,7 @@
 //
 //  Token.swift
 //  SwiftUITokenField • https://github.com/orchetect/SwiftUITokenField
-//  © 2025 Steffan Andrews • Licensed under MIT License
+//  © 2026 Steffan Andrews • Licensed under MIT License
 //
 
 import Foundation
@@ -14,7 +14,9 @@ public enum Token: String, CaseIterable {
 }
 
 extension Token: Identifiable {
-    public var id: RawValue { rawValue }
+    public var id: RawValue {
+        rawValue
+    }
 }
 
 extension Token {

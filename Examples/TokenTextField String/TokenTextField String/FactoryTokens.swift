@@ -1,7 +1,7 @@
 //
 //  FactoryTokens.swift
 //  SwiftUITokenField • https://github.com/orchetect/SwiftUITokenField
-//  © 2025 Steffan Andrews • Licensed under MIT License
+//  © 2026 Steffan Andrews • Licensed under MIT License
 //
 
 import Foundation
@@ -12,11 +12,11 @@ public enum FactoryTokens {
     public static let foobar = "foobar"
     public static let date = "date"
     public static let time = "time"
-    
+
     public static func allTokens() -> [String] {
         [foobar, date, time]
     }
-    
+
     public static func substitution(for token: String) -> String {
         switch token {
         case foobar:

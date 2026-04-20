@@ -1,7 +1,7 @@
 //
 //  ContentView.swift
 //  SwiftUITokenField • https://github.com/orchetect/SwiftUITokenField
-//  © 2025 Steffan Andrews • Licensed under MIT License
+//  © 2026 Steffan Andrews • Licensed under MIT License
 //
 
 import SwiftUI
@@ -13,7 +13,7 @@ struct ContentView: View {
     @State private var isNewTokensAllowed: Bool = true
     @State private var isTokenSubstitutedInline: Bool = false
     @State private var tokens: [String] = .presetTokens // []
-    
+
     var body: some View {
         Form {
             Section("Token Field") {
@@ -31,10 +31,10 @@ struct ContentView: View {
                         isNewTokensAllowed,
                         isTokenSubstitutedInline
                     ]) // force refresh when option is toggled
-                    
+
                     Text(tokens.joined(separator: ", "))
                 }
-                
+
                 LabeledContent("Append Token from Menu") {
                     Menu {
                         ForEach(FactoryTokens.allTokens(), id: \.self) { token in
@@ -48,7 +48,7 @@ struct ContentView: View {
                     .frame(width: 80)
                     .multilineTextAlignment(.trailing)
                 }
-                
+
                 LabeledContent("Insert Token by Dragging") {
                     HStack {
                         ForEach(FactoryTokens.allTokens(), id: \.self) { token in
@@ -61,13 +61,13 @@ struct ContentView: View {
                         }
                     }
                 }
-                
+
                 Toggle("Editable", isOn: $isEditable)
-                
+
                 Toggle("Allow Duplicate Tokens", isOn: $isDuplicateTokensAllowed)
-                
+
                 Toggle("Allow New Token Creation", isOn: $isNewTokensAllowed)
-                
+
                 Toggle("Inline Token Substitutions", isOn: $isTokenSubstitutedInline)
             }
         }

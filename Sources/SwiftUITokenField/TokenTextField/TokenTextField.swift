@@ -1,7 +1,7 @@
 //
 //  TokenTextField.swift
 //  SwiftUITokenField • https://github.com/orchetect/SwiftUITokenField
-//  © 2025 Steffan Andrews • Licensed under MIT License
+//  © 2026 Steffan Andrews • Licensed under MIT License
 //
 
 #if os(macOS)
@@ -10,50 +10,50 @@ import AppKit
 import SwiftUI
 
 /// A text field that allows mixed entry of text and strongly-typed tokens.
-public struct TokenTextField<Token>: View, NSViewRepresentable where Token: Hashable {
+public struct TokenTextField<Token: Hashable>: View, NSViewRepresentable {
     @Binding private var tokens: TokenizedString<Token>
-    
+
     private var isEditable: Bool
     private var decode: (Token) -> String
     private var encode: (String) -> Token?
     private var completions: [Token: String]
     private var allowDuplicateTokens: Bool
-    
+
     // MARK: - View Creation
-    
+
     public func makeNSView(context: Context) -> NSTokenField {
         let tokenField = NSTokenField()
         tokenField.delegate = context.coordinator
-        
+
         // prevents auto-tokenizing user keyboard input from comma entry
         tokenField.tokenizingCharacterSet = CharacterSet()
         tokenField.tokenStyle = .rounded
         tokenField.allowsEditingTextAttributes = false
-        
+
         // geometry
         tokenField.autoresizingMask = [.width, .height]
-        
+
         // configure cell
         let cell = tokenField.cell as? NSTokenFieldCell
         cell?.setCellAttribute(.cellIsBordered, to: 0)
         cell?.tokenStyle = tokenField.tokenStyle
-        
+
         return tokenField
     }
-    
+
     // MARK: - View Update
-    
+
     public func updateNSView(_ nsView: NSTokenField, context: Context) {
         if let bounds = nsView.superview?.bounds {
             nsView.frame = bounds
         }
-        
+
         // data
         nsView.objectValue = unwrap(tokens: tokens)
         if !allowDuplicateTokens {
             context.coordinator.removeDuplicateTokens() // runs async on main
         }
-        
+
         // editable
         let wasEditable = nsView.isEditable
         nsView.isEditable = isEditable
@@ -62,20 +62,20 @@ public struct TokenTextField<Token>: View, NSViewRepresentable where Token: Hash
             nsView.removeFirstResponderIfFocused()
         }
     }
-    
+
     // MARK: - Coordinator
-    
+
     public func makeCoordinator() -> Coordinator {
         Coordinator(self)
     }
-    
+
     public final class Coordinator: NSObject, NSTokenFieldDelegate, ObservableObject {
         var parent: TokenTextField<Token>
-        
+
         init(_ parent: TokenTextField<Token>) {
             self.parent = parent
         }
-        
+
         public func tokenField(
             _ tokenField: NSTokenField,
             displayStringForRepresentedObject representedObject: Any
@@ -87,7 +87,7 @@ public struct TokenTextField<Token>: View, NSViewRepresentable where Token: Hash
             default: nil
             }
         }
-        
+
         public func tokenField(
             _ tokenField: NSTokenField,
             editingStringForRepresentedObject representedObject: Any
@@ -98,7 +98,7 @@ public struct TokenTextField<Token>: View, NSViewRepresentable where Token: Hash
             default: nil
             }
         }
-        
+
         // implementing this method prevents the default behavior of trimming whitespaces from tokens
         public func tokenField(
             _ tokenField: NSTokenField,
@@ -106,14 +106,14 @@ public struct TokenTextField<Token>: View, NSViewRepresentable where Token: Hash
         ) -> Any? {
             editingString
         }
-        
+
         public func tokenField(
             _ tokenField: NSTokenField,
             shouldAdd tokens: [Any],
             at index: Int
         ) -> [Any] {
             var output: [Any] = []
-            
+
             func add(token: Token) {
                 // reject duplicate token if not allowed
                 if !parent.allowDuplicateTokens,
@@ -124,7 +124,7 @@ public struct TokenTextField<Token>: View, NSViewRepresentable where Token: Hash
                 }
                 output.append(TokenWrapper(token: token))
             }
-            
+
             for token in tokens {
                 // handle `Token is String` separately
                 if let string = token as? Token, string is String {
@@ -134,7 +134,7 @@ public struct TokenTextField<Token>: View, NSViewRepresentable where Token: Hash
                     } else {
                         output.append(string)
                     }
-                
+
                     // Otherwise, we can differentiate non-String Token easier
                 } else {
                     if let cast = token as? Token {
@@ -151,10 +151,10 @@ public struct TokenTextField<Token>: View, NSViewRepresentable where Token: Hash
                     }
                 }
             }
-            
+
             return output
         }
-        
+
         public func tokenField(
             _ tokenField: NSTokenField,
             styleForRepresentedObject representedObject: Any
@@ -165,7 +165,7 @@ public struct TokenTextField<Token>: View, NSViewRepresentable where Token: Hash
             default: .none
             }
         }
-        
+
         public func tokenField(
             _ tokenField: NSTokenField,
             completionsForSubstring substring: String,
@@ -173,11 +173,11 @@ public struct TokenTextField<Token>: View, NSViewRepresentable where Token: Hash
             indexOfSelectedItem selectedIndex: UnsafeMutablePointer<Int>?
         ) -> [Any]? {
             guard substring.count >= 2 else { return nil } // minimum text length
-            
+
             let candidates = parent.completions.filter { $0.value.starts(with: substring) }.values
             return candidates.isEmpty ? nil : Array(candidates)
         }
-        
+
         public func controlTextDidChange(_ obj: Notification) {
             guard let textField = obj.object as? NSTokenField else {
                 // print("Control text did change, but object not a token field")
@@ -189,22 +189,22 @@ public struct TokenTextField<Token>: View, NSViewRepresentable where Token: Hash
                 // print("Control text did change, but encountered unexpected type: \(type(of: textField.objectValue))")
                 return
             }
-            
+
             DispatchQueue.main.async {
                 self.parent._tokens.wrappedValue.sequence = mapped
             }
         }
-        
+
         // not used
         public func tokenField(_ tokenField: NSTokenField, hasMenuForRepresentedObject representedObject: Any) -> Bool {
             false
         }
-        
+
         // not used
         public func tokenField(_ tokenField: NSTokenField, menuForRepresentedObject representedObject: Any) -> NSMenu? {
             nil
         }
-        
+
         /// Utility method to wrap the raw objects in ``TokenizedString/Element``-wrapped enum cases.
         func mapToTokensElements(_ objects: [Any]) -> [TokenizedString<Token>.Element]? {
             var mapped: [TokenizedString<Token>.Element] = []
@@ -217,18 +217,18 @@ public struct TokenTextField<Token>: View, NSViewRepresentable where Token: Hash
             }
             return mapped
         }
-        
+
         func removeDuplicateTokens() {
             DispatchQueue.main.async { [parent] in
                 let tokens = parent._tokens.wrappedValue.sequence.removingDuplicates()
-                
+
                 if parent._tokens.wrappedValue.sequence != tokens {
                     parent._tokens.wrappedValue.sequence = tokens
                 }
             }
         }
     }
-    
+
     /// Utility method to unwrap ``TokenizedString/Element``-wrapped objects and return an array to use with
     /// `NSTokenField`.
     func unwrap(tokens: TokenizedString<Token>) -> [Any] {
@@ -239,7 +239,7 @@ public struct TokenTextField<Token>: View, NSViewRepresentable where Token: Hash
             }
         }
     }
-    
+
     /// Token wrapper used to differentiate tokens from in-progress user text input,
     /// since it's possible for Token to be of type `String`.
     private struct TokenWrapper {

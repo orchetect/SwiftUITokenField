@@ -1,7 +1,7 @@
 //
 //  Utilities.swift
 //  SwiftUITokenField • https://github.com/orchetect/SwiftUITokenField
-//  © 2025 Steffan Andrews • Licensed under MIT License
+//  © 2026 Steffan Andrews • Licensed under MIT License
 //
 
 extension Sequence where Element: Hashable {
@@ -10,7 +10,7 @@ extension Sequence where Element: Hashable {
             base[key(element)] = element
         }
     }
-    
+
     func mapToDictionaryKeys<T>(withValues value: (Element) -> T) -> [Element: T] {
         reduce(into: [:]) { base, element in
             base[element] = value(element)
@@ -29,7 +29,7 @@ extension RangeReplaceableCollection where Self: RandomAccessCollection, Element
             index = self.index(before: index)
         }
     }
-    
+
     func removingDuplicates() -> Self {
         var copy = self
         copy.removeDuplicates()
@@ -50,11 +50,11 @@ extension NSTokenField {
             || responder == cell
             || responder.nextResponder?.nextResponder == self // typically the nested NSTextEditView
     }
-    
+
     @MainActor
     func removeFirstResponderIfFocused() {
         guard isFirstResponder else { return }
-        
+
         DispatchQueue.main.async {
             let target = self.superview ?? self.window
             self.window?.makeFirstResponder(target)

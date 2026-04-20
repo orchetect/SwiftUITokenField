@@ -1,7 +1,7 @@
 //
 //  TokenizedString Element.swift
 //  SwiftUITokenField • https://github.com/orchetect/SwiftUITokenField
-//  © 2025 Steffan Andrews • Licensed under MIT License
+//  © 2026 Steffan Andrews • Licensed under MIT License
 //
 
 #if os(macOS)
@@ -20,7 +20,9 @@ extension TokenizedString.Element: Hashable where Token: Hashable { }
 extension TokenizedString.Element: Sendable where Token: Sendable { }
 
 extension TokenizedString.Element: Identifiable where Token: Hashable {
-    public var id: Self { self }
+    public var id: Self {
+        self
+    }
 }
 
 // MARK: - Conveniences
@@ -49,7 +51,7 @@ extension TokenizedString.Element where Token: Equatable {
     public static func == (lhs: Self, rhs: Token) -> Bool {
         lhs == .token(rhs)
     }
-    
+
     public static func == (lhs: Token, rhs: Self) -> Bool {
         .token(lhs) == rhs
     }

@@ -1,7 +1,7 @@
 //
 //  TokenField.swift
 //  SwiftUITokenField • https://github.com/orchetect/SwiftUITokenField
-//  © 2025 Steffan Andrews • Licensed under MIT License
+//  © 2026 Steffan Andrews • Licensed under MIT License
 //
 
 #if os(macOS)
@@ -10,53 +10,53 @@ import AppKit
 import SwiftUI
 
 /// A text field that allows entry of strongly-typed tokens.
-public struct TokenField<Token>: View, NSViewRepresentable where Token: Hashable {
+public struct TokenField<Token: Hashable>: View, NSViewRepresentable {
     @Binding private var tokens: [Token]
     @Binding private var isEditable: Bool
-    
+
     private var decode: (Token) -> String
     private var encode: (String) -> Token?
     private var completions: [Token: String]
     private var allowNewStringTokens: Bool
     private var allowDuplicateTokens: Bool
-    
+
     // MARK: - View Creation
-    
+
     public func makeNSView(context: Context) -> NSTokenField {
         let tokenField = NSTokenField()
         tokenField.delegate = context.coordinator
-        
+
         // appearance
         tokenField.tokenStyle = .rounded
-        
+
         // behavior
         tokenField.isEditable = isEditable
         tokenField.allowsEditingTextAttributes = false
-        
+
         // geometry
         tokenField.autoresizingMask = [.width, .height]
-        
+
         // configure cell
         let cell = tokenField.cell as? NSTokenFieldCell
         cell?.setCellAttribute(.cellIsBordered, to: 0)
         cell?.tokenStyle = tokenField.tokenStyle
-        
+
         return tokenField
     }
-    
+
     // MARK: - View Update
-    
+
     public func updateNSView(_ nsView: NSTokenField, context: Context) {
         if let bounds = nsView.superview?.bounds {
             nsView.frame = bounds
         }
-        
+
         // data
         nsView.objectValue = tokens.map { TokenWrapper(token: $0) }
         if !allowDuplicateTokens {
             context.coordinator.removeDuplicateTokens() // runs async on main
         }
-        
+
         // editable
         let wasEditable = nsView.isEditable
         nsView.isEditable = isEditable
@@ -64,26 +64,26 @@ public struct TokenField<Token>: View, NSViewRepresentable where Token: Hashable
             // print("Removing focus from token field.")
             nsView.removeFirstResponderIfFocused()
         }
-        
+
         // restrict new tokens
         if !allowNewStringTokens {
             context.coordinator.removeNewTokens() // runs async on main
         }
     }
-    
+
     // MARK: - Coordinator
-    
+
     public func makeCoordinator() -> Coordinator {
         Coordinator(self)
     }
-    
+
     public final class Coordinator: NSObject, NSTokenFieldDelegate, ObservableObject {
         var parent: TokenField<Token>
-        
+
         init(_ parent: TokenField<Token>) {
             self.parent = parent
         }
-        
+
         public func tokenField(
             _ tokenField: NSTokenField,
             displayStringForRepresentedObject representedObject: Any
@@ -95,7 +95,7 @@ public struct TokenField<Token>: View, NSViewRepresentable where Token: Hashable
             default: nil
             }
         }
-        
+
         public func tokenField(
             _ tokenField: NSTokenField,
             editingStringForRepresentedObject representedObject: Any
@@ -106,17 +106,17 @@ public struct TokenField<Token>: View, NSViewRepresentable where Token: Hashable
             default: nil
             }
         }
-        
+
         public func tokenField(
             _ tokenField: NSTokenField,
             shouldAdd tokens: [Any],
             at index: Int
         ) -> [Any] {
             var output: [TokenWrapper] = []
-            
+
             // if token type is String, we can allow arbitrary entry of new tokens not defined
             // if token type is non-String, we are limited to valid instances of the token
-            
+
             for case let item as String in tokens {
                 if let token = parent.encode(item) {
                     // reject new String token if not allowed
@@ -126,7 +126,7 @@ public struct TokenField<Token>: View, NSViewRepresentable where Token: Hashable
                     {
                         continue
                     }
-                    
+
                     // reject duplicate token if not allowed
                     if !parent.allowDuplicateTokens,
                        parent._tokens.wrappedValue.contains(token) == true
@@ -134,21 +134,21 @@ public struct TokenField<Token>: View, NSViewRepresentable where Token: Hashable
                         // print("Rejecting duplicate token: \(token)")
                         continue
                     }
-                    
+
                     output.append(TokenWrapper(token: token))
                 }
             }
-            
+
             return output
         }
-        
+
         public func tokenField(
             _ tokenField: NSTokenField,
             styleForRepresentedObject representedObject: Any
         ) -> NSTokenField.TokenStyle {
             .rounded
         }
-        
+
         public func tokenField(
             _ tokenField: NSTokenField,
             completionsForSubstring substring: String,
@@ -156,11 +156,11 @@ public struct TokenField<Token>: View, NSViewRepresentable where Token: Hashable
             indexOfSelectedItem selectedIndex: UnsafeMutablePointer<Int>?
         ) -> [Any]? {
             guard substring.count >= 2 else { return nil } // minimum text length
-            
+
             let candidates = parent.completions.filter { $0.value.starts(with: substring) }.values
             return candidates.isEmpty ? nil : Array(candidates)
         }
-        
+
         public func controlTextDidChange(_ obj: Notification) {
             guard let textField = obj.object as? NSTokenField else {
                 // print("Control text did change, but object not a token field")
@@ -171,51 +171,51 @@ public struct TokenField<Token>: View, NSViewRepresentable where Token: Hashable
                 // print("Control text changed, but object is unexpected type: \(type(of: textField.objectValue))")
                 return
             }
-            
+
             let mapped = anyArray
                 .compactMap { $0 as? TokenWrapper }
                 .map(\.token)
-            
+
             DispatchQueue.main.async {
                 self.parent._tokens.wrappedValue = mapped
             }
         }
-        
+
         // not used
         public func tokenField(_ tokenField: NSTokenField, hasMenuForRepresentedObject representedObject: Any) -> Bool {
             false
         }
-        
+
         // not used
         public func tokenField(_ tokenField: NSTokenField, menuForRepresentedObject representedObject: Any) -> NSMenu? {
             nil
         }
-        
+
         func removeDuplicateTokens() {
             DispatchQueue.main.async { [parent] in
                 let tokens = parent._tokens.wrappedValue.removingDuplicates()
-                
+
                 if parent._tokens.wrappedValue != tokens {
                     parent._tokens.wrappedValue = tokens
                 }
             }
         }
-        
+
         func removeNewTokens() {
             DispatchQueue.main.async { [parent] in
                 var tokens = parent._tokens.wrappedValue
-                
+
                 tokens.removeAll {
                     !parent.completions.keys.contains($0)
                 }
-                
+
                 if parent._tokens.wrappedValue != tokens {
                     parent._tokens.wrappedValue = tokens
                 }
             }
         }
     }
-    
+
     /// Token wrapper used to differentiate tokens from in-progress user text input,
     /// since it's possible for Token to be of type `String`.
     private struct TokenWrapper {

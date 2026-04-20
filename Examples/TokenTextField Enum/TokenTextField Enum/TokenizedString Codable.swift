@@ -1,7 +1,7 @@
 //
 //  TokenizedString Codable.swift
 //  SwiftUITokenField • https://github.com/orchetect/SwiftUITokenField
-//  © 2025 Steffan Andrews • Licensed under MIT License
+//  © 2026 Steffan Andrews • Licensed under MIT License
 //
 
 import Foundation
@@ -15,20 +15,20 @@ extension TokenizedString<Token>: @retroactive Codable {
         case token
         case string
     }
-    
+
     public init(from decoder: any Decoder) throws {
         var container = try decoder.unkeyedContainer()
-        
+
         var sequence: [Element] = []
         while let element = try container.decodeIfPresent(Element.self) {
             sequence.append(element)
         }
         self.init(sequence)
     }
-    
+
     public func encode(to encoder: any Encoder) throws {
         var container = encoder.unkeyedContainer()
-        
+
         for element in sequence {
             try container.encode(element)
         }
@@ -44,10 +44,10 @@ extension TokenizedString<Token>.Element: @retroactive Codable {
         case token
         case string
     }
-    
+
     public init(from decoder: any Decoder) throws {
         let container = try decoder.singleValueContainer()
-        
+
         let value = try container.decode([String: String].self)
         guard value.count == 1,
               let (keyString, valueString) = value.first
@@ -73,10 +73,10 @@ extension TokenizedString<Token>.Element: @retroactive Codable {
             self = .string(valueString)
         }
     }
-    
+
     public func encode(to encoder: any Encoder) throws {
         var container = encoder.singleValueContainer()
-        
+
         switch self {
         case let .token(token):
             try container.encode([CodingKeys.token.rawValue: token.rawValue])

@@ -1,7 +1,7 @@
 //
 //  TokenTextFieldEnumApp.swift
 //  SwiftUITokenField • https://github.com/orchetect/SwiftUITokenField
-//  © 2025 Steffan Andrews • Licensed under MIT License
+//  © 2026 Steffan Andrews • Licensed under MIT License
 //
 
 import SwiftUI

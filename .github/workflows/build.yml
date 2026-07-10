@@ -25,8 +25,8 @@ on:
     - cron: '22 06 * * *'   # once a day @ 6:22am UTC
 
 env:
-  SCHEME: "SwiftUITokenField-CI"
-  WORKSPACEPATH: ".swiftpm/xcode/package.xcworkspace"
+  SCHEME: SwiftUITokenField-CI
+  WORKSPACEPATH: .swiftpm/xcode/package.xcworkspace
 
 jobs:
   macOS:

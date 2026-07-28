@@ -143,6 +143,27 @@ struct TokenizedString_Tests {
     }
 
     @Test
+    func tokenizedStringStringSubstitutionAsync() async {
+        @Sendable func transform(_ token: TestToken) async -> String {
+            "\(token.value)"
+        }
+
+        await #expect(
+            TS([
+                .string("A very long string with "),
+                .token(.one),
+                .string(", "),
+                .token(.two),
+                .string(" and "),
+                .token(.three),
+                .string(".")
+            ])
+            .string(substitution: { await transform($0) })
+            == "A very long string with 1, 2 and 3."
+        )
+    }
+
+    @Test
     func tokenizedStringStringSubstitution_WithSeparator() {
         #expect(TS([]).string(separator: "-", substitution: { "\($0.value)" }) == "")
         #expect(TS([.string("")]).string(separator: "-", substitution: { "\($0.value)" }) == "")

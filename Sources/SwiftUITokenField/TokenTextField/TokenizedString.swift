@@ -41,6 +41,22 @@ extension TokenizedString {
             }
             .joined(separator: separator)
     }
+
+    @_disfavoredOverload
+    public func string(
+        separator: String = "",
+        substitution: @Sendable @escaping (_ token: Token) async -> String
+    ) async -> String {
+        var output: [String] = []
+        for element in sequence {
+            let substitute = switch element {
+            case let .token(token): await substitution(token)
+            case let .string(string): string
+            }
+            output.append(substitute)
+        }
+        return output.joined(separator: separator)
+    }
 }
 
 // MARK: - Tokenized String

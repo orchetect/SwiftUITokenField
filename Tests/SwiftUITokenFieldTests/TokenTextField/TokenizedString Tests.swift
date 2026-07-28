@@ -144,7 +144,8 @@ struct TokenizedString_Tests {
 
     @Test
     func tokenizedStringStringSubstitutionAsync() async {
-        @Sendable func transform(_ token: TestToken) async -> String {
+        @Sendable
+        func transform(_ token: TestToken) async -> String {
             "\(token.value)"
         }
 
